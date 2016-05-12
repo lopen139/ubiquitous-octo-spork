@@ -10,10 +10,10 @@ namespace ConsoleApplication4
     {
         static void Main(string[] args)
         {
-            Console.WriteLine(Environment.CurrentDirectory);    
-            System.IO.File.ReadAllLines("..\\..\\puzzels\\1.txt");
-            while(true)
-            { }
+            var input = System.IO.File.ReadAllLines("..\\..\\puzzels\\1.txt");
+            var sudoku = new Sudoku(input);
+            sudoku.PrintSudoku();
+            Console.ReadLine();
         }
     }
 }

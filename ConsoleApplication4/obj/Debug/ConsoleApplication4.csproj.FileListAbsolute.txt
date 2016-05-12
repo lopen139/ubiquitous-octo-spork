@@ -7,3 +7,11 @@ C:\Users\Rob\Desktop\School\Computationele Intelligentie\ConsoleApplication4\obj
 C:\Users\Rob\Desktop\School\Computationele Intelligentie\ConsoleApplication4\obj\Debug\ConsoleApplication4.pdb
 C:\Users\Rob\Desktop\School\Computationele Intelligentie\ConsoleApplication4\obj\Debug\ConsoleApplication4.Properties.Resources.resources
 C:\Users\Rob\Desktop\School\Computationele Intelligentie\ConsoleApplication4\obj\Debug\ConsoleApplication4.csproj.GenerateResource.Cache
+D:\Jim\ci_practicum\ConsoleApplication4\bin\Debug\ConsoleApplication4.exe.config
+D:\Jim\ci_practicum\ConsoleApplication4\obj\Debug\ConsoleApplication4.exe
+D:\Jim\ci_practicum\ConsoleApplication4\obj\Debug\ConsoleApplication4.pdb
+D:\Jim\ci_practicum\ConsoleApplication4\bin\Debug\ConsoleApplication4.exe
+D:\Jim\ci_practicum\ConsoleApplication4\bin\Debug\ConsoleApplication4.pdb
+D:\Jim\ci_practicum\ConsoleApplication4\obj\Debug\ConsoleApplication4.csprojResolveAssemblyReference.cache
+D:\Jim\ci_practicum\ConsoleApplication4\obj\Debug\ConsoleApplication4.Properties.Resources.resources
+D:\Jim\ci_practicum\ConsoleApplication4\obj\Debug\ConsoleApplication4.csproj.GenerateResource.Cache
