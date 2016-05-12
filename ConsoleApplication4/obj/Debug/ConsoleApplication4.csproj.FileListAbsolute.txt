@@ -1,0 +1,9 @@
+c:\users\rob\documents\visual studio 2013\Projects\ConsoleApplication4\ConsoleApplication4\bin\Debug\ConsoleApplication4.exe.config
+C:\Users\Rob\Desktop\School\Computationele Intelligentie\ConsoleApplication4\bin\Debug\ConsoleApplication4.exe.config
+C:\Users\Rob\Desktop\School\Computationele Intelligentie\ConsoleApplication4\bin\Debug\ConsoleApplication4.exe
+C:\Users\Rob\Desktop\School\Computationele Intelligentie\ConsoleApplication4\bin\Debug\ConsoleApplication4.pdb
+C:\Users\Rob\Desktop\School\Computationele Intelligentie\ConsoleApplication4\obj\Debug\ConsoleApplication4.csprojResolveAssemblyReference.cache
+C:\Users\Rob\Desktop\School\Computationele Intelligentie\ConsoleApplication4\obj\Debug\ConsoleApplication4.exe
+C:\Users\Rob\Desktop\School\Computationele Intelligentie\ConsoleApplication4\obj\Debug\ConsoleApplication4.pdb
+C:\Users\Rob\Desktop\School\Computationele Intelligentie\ConsoleApplication4\obj\Debug\ConsoleApplication4.Properties.Resources.resources
+C:\Users\Rob\Desktop\School\Computationele Intelligentie\ConsoleApplication4\obj\Debug\ConsoleApplication4.csproj.GenerateResource.Cache
