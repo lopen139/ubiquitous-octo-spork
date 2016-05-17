@@ -30,6 +30,7 @@ namespace ConsoleApplication4
         public Sudoku SolveSudoku(string[] input)
         {
             sudoku = new Sudoku(input);
+            sudoku.PrintSudoku();
             Solve(new Operation(0,0,0));
             return sudoku;
         }
@@ -77,13 +78,15 @@ namespace ConsoleApplication4
         
         public Sudoku(string[] input)
         {
+
             n = input.Length;
             puzzle = new int[n,n];
             for (int i = 0; i < n; i++)
             {
+                var temp = input[i].Split(' ');
                 for (int j = 0; j < n; j++)
                 {
-                    string numstr = input[i][j].ToString();
+                    string numstr = temp[j].ToString();
                     puzzle[i, j] = int.Parse(numstr);
                 }
             }

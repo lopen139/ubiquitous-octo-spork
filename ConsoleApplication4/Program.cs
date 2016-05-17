@@ -10,7 +10,7 @@ namespace ConsoleApplication4
     {
         static void Main(string[] args)
         {
-            var input = System.IO.File.ReadAllLines("..\\..\\puzzels\\1.txt");
+            var input = System.IO.File.ReadAllLines("..\\..\\puzzels\\25x25_1.txt");
             //var sudoku = new Sudoku(input);
             //sudoku.PrintSudoku();
             SudokuSolver solver = new SudokuSolver();
