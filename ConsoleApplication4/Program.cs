@@ -11,8 +11,11 @@ namespace ConsoleApplication4
         static void Main(string[] args)
         {
             var input = System.IO.File.ReadAllLines("..\\..\\puzzels\\1.txt");
-            var sudoku = new Sudoku(input);
-            sudoku.PrintSudoku();
+            //var sudoku = new Sudoku(input);
+            //sudoku.PrintSudoku();
+            SudokuSolver solver = new SudokuSolver();
+            solver.SolveSudoku(input);
+            solver.sudoku.PrintSudoku();
             Console.ReadLine();
         }
     }

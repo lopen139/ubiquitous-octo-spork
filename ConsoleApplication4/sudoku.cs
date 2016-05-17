@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -21,16 +22,15 @@ namespace ConsoleApplication4
         }
     }
 
-    class SudokuSolver
+    internal class SudokuSolver
     {
-        private Sudoku sudoku;
+        public Sudoku sudoku;
+        private bool solved;
 
         public Sudoku SolveSudoku(string[] input)
         {
             sudoku = new Sudoku(input);
-
-            
-
+            Solve(new Operation(0,0,0));
             return sudoku;
         }
 
@@ -39,12 +39,33 @@ namespace ConsoleApplication4
             //TODO: iets met een stack en een while loop..
             //TODO: check voor "dead end": kijken of de sudoku helemaal is ingevuld of niet. Test sudoku methode?
             //TODO: alleen nullen morgen verandert worden.
-            //Generate child
-            var operation = sudoku.GetNewSudoku(lastOperation);
-            if (operation.val == 0) return;
-            sudoku.AugmentSudoku(operation);
-           
-            Solve(operation);
+
+            //Generate children
+            bool moreChildren = true;
+            var parentOperation = lastOperation;
+            while (!solved && moreChildren)
+            {
+                var operation = sudoku.GetNewSudoku(lastOperation);
+                if (operation.val == -2)
+                {
+                    solved = true;
+                }
+                else if (operation.val == -1)
+                {
+                    moreChildren = false;
+                    //undo
+                    sudoku.UndoLastOperation(parentOperation);
+                }
+                else
+                {
+                    sudoku.AugmentSudoku(operation);
+                    //Console.Clear();
+                    //sudoku.PrintSudoku();
+                    //System.Threading.Thread.Sleep(300);
+                    Solve(operation);
+                    lastOperation = operation;
+                }
+            }
         }
     }
 
@@ -53,7 +74,7 @@ namespace ConsoleApplication4
         private int n;
         private int[,] puzzle;
         private int sqrtN;
-
+        
         public Sudoku(string[] input)
         {
             n = input.Length;
@@ -90,27 +111,33 @@ namespace ConsoleApplication4
             bool found = false;
             while (!found)
             {
-                if (val < n)
+                if (val < n && puzzle[x, y] == 0)
                 {
                     val++;
                     found = TestOperation(x, y, val);
                 }
+                else if (puzzle[x, y] == 0)
+                {
+                    return new Operation(0,0,-1); // Branch is dead
+                }
+                else if (y < n - 1 )
+                {
+                    y++;
+                    //x = 0;
+                    val = 0;
+                    //found = TestOperation(x, y, val);
+                }
                 else if (x < n - 1)
                 {
                     x++;
-                    val = 1;
-                    found = TestOperation(x, y, val);
+                    y = 0;
+                    val = 0;
+                   // found = TestOperation(x, y, val);
                 }
-                else if(y < n - 1)
-                {
-                    y++;
-                    x = 0;
-                    val = 1;
-                    found = TestOperation(x, y, val);
-                }
+
                 else
                 {
-                    return new Operation(0,0,0);
+                    return new Operation(0,0,-2); // Answer found
                 }
             }
             return new Operation(x,y,val);
@@ -144,6 +171,23 @@ namespace ConsoleApplication4
                 }   
             }
             return true;
+        }
+
+        public bool CheckSudoku()
+        {
+            for (int i = 0; i < n - 1; i++)
+            {
+                for (int j = 0; j < n - 1; j++)
+                {
+                    if (puzzle[i, j] == 0) return false;
+                }
+            }
+            return true;
+        }
+
+        public void UndoLastOperation(Operation opp)
+        {
+            puzzle[opp.x, opp.y] = 0;
         }
     }
 }
