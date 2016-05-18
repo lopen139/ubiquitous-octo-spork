@@ -59,12 +59,25 @@ namespace ConsoleApplication4
                     moreChildren = false;
                     //undo
                     sudoku.UndoLastOperation(parentOperation);
+                    Console.Clear();
+                    Console.WriteLine("SUDOKU:");
+                    sudoku.PrintSudoku();
+                    Console.WriteLine("POSSIBLEDIGITS:");
+                    sudoku.PrintSudoku(true);
+                    Console.WriteLine("OPERATION");
+                    Console.WriteLine(@"RES:: x: {0}, y: {1}, val: {2}, k: {3} ", operation.x, operation.y, operation.val, operation.lastChoosenBest);
+                    System.Threading.Thread.Sleep(300);
                 }
                 else
                 {
                     sudoku.AugmentSudoku(operation);
                     Console.Clear();
+                    Console.WriteLine("SUDOKU:");
+                    sudoku.PrintSudoku();
+                    Console.WriteLine("POSSIBLEDIGITS:");
                     sudoku.PrintSudoku(true);
+                    Console.WriteLine("OPERATION");
+                    Console.WriteLine(@"AUG:: x: {0}, y: {1}, val: {2}, k: {3} ",operation.x, operation.y, operation.val, operation.lastChoosenBest);
                     System.Threading.Thread.Sleep(300);
                     Solve(operation);
                     lastOperation = operation;
@@ -110,7 +123,8 @@ namespace ConsoleApplication4
             {
                 for (int y = 0; y < n; y++)
                 {
-                    possibleEntries[x, y] = FindPossibleEntries(x,y);
+                    if (puzzle[x, y] != 0) possibleEntries[x, y] = 0;
+                    else possibleEntries[x, y] = FindPossibleEntries(x,y);
                 }
             }       
         }
@@ -148,13 +162,17 @@ namespace ConsoleApplication4
             {
                 if (!reset)
                 {
-                    possibleEntries[x, i]++;
-                    possibleEntries[i, y]++;
+                    if (x == i) continue; //Prevents overcounting [x,y]
+                    possibleEntries[x, i]--;
+                    possibleEntries[i, y]--;
+                    if (possibleEntries[x, i] < 0) possibleEntries[x, i] = 0; //Prevents minus signs in possibleEntries
+                    if (possibleEntries[i, y] < 0) possibleEntries[i, y] = 0;
                 }
                 else
                 {
-                    possibleEntries[x, i]--;
-                    possibleEntries[i, y]--;
+                    if (x == i) continue;
+                    possibleEntries[x, i]++;
+                    possibleEntries[i, y]++;
                 }
             }
         }
@@ -184,8 +202,16 @@ namespace ConsoleApplication4
                 lastChoosenBest++;
                 if(lastChoosenBest > n*n) return new Operation(0, 0, -1, 0); //Branch dead
                 int[] c = FindKBestPossibleEntrie(lastChoosenBest);
-                if (c[0] == -1 || c[1] == -1) return new Operation(0, 0, -1, 0); //Branch dead
-                if (c[0] == -2 || c[1] == -2) return new Operation(0, 0, -2, 0); //Answer found
+                if (c[0] == -1 || c[1] == -1)
+                {
+                    //Branch dead
+                    return new Operation(0, 0, -1, 0);
+                }
+                if (c[0] == -2 || c[1] == -2)
+                {
+                    //Answer found
+                    return new Operation(0, 0, -2, 0);
+                }
                 for (int val = 1; val < n + 1; val++)
                 {
                     if (TestOperation(c[0], c[1], val)) return new Operation(c[0], c[1], val, lastChoosenBest);
@@ -205,6 +231,7 @@ namespace ConsoleApplication4
             {
                 for (int y = 0; y < n; y++)
                 {
+                    if (possibleEntries[x, y] == 0) continue;
                     for (int i = 0; i < k; i++)
                     {
                         if (bestEntries[i] == null)
