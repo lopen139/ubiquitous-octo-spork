@@ -63,9 +63,9 @@ namespace ConsoleApplication4
                 else
                 {
                     sudoku.AugmentSudoku(operation);
-                    //Console.Clear();
-                    //sudoku.PrintSudoku();
-                    //System.Threading.Thread.Sleep(300);
+                    Console.Clear();
+                    sudoku.PrintSudoku(true);
+                    System.Threading.Thread.Sleep(300);
                     Solve(operation);
                     lastOperation = operation;
                 }
@@ -148,13 +148,13 @@ namespace ConsoleApplication4
             {
                 if (!reset)
                 {
-                    possibleEntries[x, i]--;
-                    possibleEntries[i, y]--;
+                    possibleEntries[x, i]++;
+                    possibleEntries[i, y]++;
                 }
                 else
                 {
-                    possibleEntries[x, i]++;
-                    possibleEntries[i, y]++;
+                    possibleEntries[x, i]--;
+                    possibleEntries[i, y]--;
                 }
             }
         }
@@ -162,13 +162,14 @@ namespace ConsoleApplication4
         /// <summary>
         /// Prints the puzzle.
         /// </summary>
-        public void PrintSudoku()
+        public void PrintSudoku(bool printPossibleEntries = false)
         {
             for (int i = 0; i < n; i++)
             {
                 for (int j = 0; j < n; j++)
                 {
-                    Console.Write(puzzle[i,j]);
+                    if(!printPossibleEntries) Console.Write(puzzle[i, j]);
+                    else Console.Write(possibleEntries[i,j]);
                     Console.Write(" ");
                 }
                 Console.WriteLine();
