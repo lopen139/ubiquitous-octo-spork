@@ -124,18 +124,18 @@ namespace ConsoleApplication4
                 for (int y = 0; y < n; y++)
                 {
                     if (puzzle[x, y] != 0) possibleEntries[x, y] = 0;
-                    else possibleEntries[x, y] = FindPossibleEntries(x,y);
+                    else possibleEntries[x, y] = CountPossibleEntries(x,y);
                 }
             }       
         }
 
         /// <summary>
-        /// Finds possible entries for a given coördinate
+        /// Counts possible entries for a given coördinate
         /// </summary>
         /// <param name="x"></param>
         /// <param name="y"></param>
         /// <returns></returns>
-        private int FindPossibleEntries(int x, int y)
+        private int CountPossibleEntries(int x, int y)
         {
             bool[] bools = new bool[n + 1];
             for (int i = 0; i < n; i++)
@@ -162,7 +162,6 @@ namespace ConsoleApplication4
             {
                 if (!reset)
                 {
-                    if (x == i) continue; //Prevents overcounting [x,y]
                     possibleEntries[x, i]--;
                     possibleEntries[i, y]--;
                     if (possibleEntries[x, i] < 0) possibleEntries[x, i] = 0; //Prevents minus signs in possibleEntries
@@ -175,6 +174,8 @@ namespace ConsoleApplication4
                     possibleEntries[i, y]++;
                 }
             }
+            if (!reset) possibleEntries[x, y] = 0;
+            else possibleEntries[x, y] = CountPossibleEntries(x, y);
         }
 
         /// <summary>
@@ -255,7 +256,7 @@ namespace ConsoleApplication4
                 }
             }
             if (possibleEntries[bestEntries[0][0], bestEntries[0][1]] == 0) return new [] { -2, -2 }; //Answer found if best answer is zero
-            if (possibleEntries[bestEntries[k - 1][0], bestEntries[k - 1][1]] == 0) return new[] { -1, -1 }; //Branch dead if best answer is not zero, but k best answer is zero.
+            if (bestEntries[k - 1] == null || possibleEntries[bestEntries[k - 1][0], bestEntries[k - 1][1]] == 0) return new[] { -1, -1 }; //Branch dead if best answer is not zero, but k best answer is zero.
             return bestEntries[k - 1];
         }
 
