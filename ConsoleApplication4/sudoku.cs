@@ -31,7 +31,9 @@ namespace ConsoleApplication4
         public Sudoku SolveSudoku(string[] input)
         {
             sudoku = new Sudoku(input);
+            Console.WriteLine("--------UNSOLVED:--------");
             sudoku.PrintSudoku();
+            Console.WriteLine("--------SOLVED:--------");
             Solve(new Operation(0,0,0,0));
             return sudoku;
         }
@@ -179,10 +181,11 @@ namespace ConsoleApplication4
             while (true)
             {
                 lastChoosenBest++;
+                if(lastChoosenBest > n*n) return new Operation(0, 0, -1, 0); //Branch dead
                 int[] c = FindKBestPossibleEntrie(lastChoosenBest);
                 if (c[0] == -1 || c[1] == -1) return new Operation(0, 0, -1, 0); //Branch dead
                 if (c[0] == -2 || c[1] == -2) return new Operation(0, 0, -2, 0); //Answer found
-                for (int val = 0; val < n; val++)
+                for (int val = 1; val < n + 1; val++)
                 {
                     if (TestOperation(c[0], c[1], val)) return new Operation(c[0], c[1], val, lastChoosenBest);
                 }
