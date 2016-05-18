@@ -84,15 +84,13 @@ namespace ConsoleApplication4
         
         public Sudoku(string[] input)
         {
-
             n = input.Length;
-            puzzle = new int[n,n];
+            puzzle = new int[n, n];
             for (int i = 0; i < n; i++)
             {
-                var temp = input[i].Split(' ');
                 for (int j = 0; j < n; j++)
                 {
-                    string numstr = temp[j].ToString();
+                    string numstr = input[i][j].ToString();
                     puzzle[i, j] = int.Parse(numstr);
                 }
             }
@@ -142,12 +140,20 @@ namespace ConsoleApplication4
         /// </summary>
         /// <param name="x"></param>
         /// <param name="y"></param>
-        private void UpdatePossibleEntries(int x, int y)
+        private void UpdatePossibleEntries(int x, int y, bool reset = false)
         {
             for (int i = 0; i < n; i++)
             {
-                possibleEntries[x, i]--;
-                possibleEntries[i, y]--;
+                if (!reset)
+                {
+                    possibleEntries[x, i]--;
+                    possibleEntries[i, y]--;
+                }
+                else
+                {
+                    possibleEntries[x, i]++;
+                    possibleEntries[i, y]++;
+                }
             }
         }
 
@@ -180,40 +186,7 @@ namespace ConsoleApplication4
                 {
                     if (TestOperation(c[0], c[1], val)) return new Operation(c[0], c[1], val, lastChoosenBest);
                 }
-               
-                /*
-                if (val < n && puzzle[x, y] == 0)
-                {
-                    val++;
-                    found = TestOperation(x, y, val);
-                }
-                else if (puzzle[x, y] == 0)
-                {
-                    return new Operation(0,0,-1); // Branch is dead
-                }
-                else if (y < n - 1 )
-                {
-                    y++;
-                    //x = 0;
-                    val = 0;
-                    //found = TestOperation(x, y, val);
-                }
-                else if (x < n - 1)
-                {
-                    x++;
-                    y = 0;
-                    val = 0;
-                   // found = TestOperation(x, y, val);
-                }
-
-                else
-                {
-                    return new Operation(0,0,-2); // Answer found
-                }
-                */
-            }
-
-           
+            }           
         }
 
         /// <summary>
@@ -305,6 +278,7 @@ namespace ConsoleApplication4
         public void UndoLastOperation(Operation opp)
         {
             puzzle[opp.x, opp.y] = 0;
+            UpdatePossibleEntries(opp.x, opp.y, true);
         }
     }
 }
