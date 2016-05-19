@@ -36,6 +36,7 @@ namespace ConsoleApplication4
             sudoku.PrintSudoku();
             Console.WriteLine("--------SOLVED:--------");
             Solve(new Operation(0,0,0,0));
+            if (!sudoku.CheckSudoku()) throw new Exception("Sudoku was not correctly solved");
             return sudoku;
         }
 
@@ -199,6 +200,43 @@ namespace ConsoleApplication4
             }
         }
 
+        private bool CheckPuzzle()
+        {
+            for (int x = 0; x < n; x++)
+            {
+                for (int y = 0; y < n; y++)
+                {
+                    if(!CheckCoördinate(x, y)) return false;
+                }
+            }
+            return true;
+        }
+
+        private bool CheckCoördinate(int x, int y)
+        {
+            int val = puzzle[x, y];
+            //Test horizontal
+            for (int i = 0; i < n - 1; i++)
+            {
+                if (val == puzzle[i, y]) return false;
+            }
+            //Test vertical
+            for (int i = 0; i < n - 1; i++)
+            {
+                if (val == puzzle[x, i]) return false;
+            }
+            //Test block
+            int x_block = x - x % sqrtN;
+            int y_block = y - y % sqrtN;
+            for (int i = x_block; i < x_block + sqrtN; i++)
+            {
+                for (int j = y_block; j < y_block + sqrtN; j++)
+                {
+                    if (val == puzzle[i, j]) return false;
+                }
+            }
+            return true;
+        }
         public Operation GetNewSudoku(Operation lastOperation)
         {
             int lastChoosenBest = lastOperation.lastChoosenBest;
@@ -206,7 +244,7 @@ namespace ConsoleApplication4
             {
                 lastChoosenBest++;
                 if(lastChoosenBest > n*n) return new Operation(0, 0, -1, 0); //Branch dead
-                int[] c = FindKBestPossibleEntrie(lastChoosenBest);
+                int[] c = FindKBestPossibleEntry(lastChoosenBest);
                 if (c[0] == -1 || c[1] == -1)
                 {
                     //Branch dead
@@ -214,14 +252,27 @@ namespace ConsoleApplication4
                 }
                 if (c[0] == -2 || c[1] == -2)
                 {
-                    //Answer found
-                    return new Operation(0, 0, -2, 0);
+                    //Possible answer found
+                    if (CheckFilled()) return new Operation(0, 0, -2, 0);
+                    return new Operation(0, 0, -1, 0);
                 }
                 for (int val = 1; val < n + 1; val++)
                 {
                     if (TestOperation(c[0], c[1], val)) return new Operation(c[0], c[1], val, lastChoosenBest);
                 }
             }           
+        }
+
+        private bool CheckFilled()
+        {
+            for (int x = 0; x < n; x++)
+            {
+                for (int y = 0; y < n; y++)
+                {
+                    if (puzzle[x, y] == 0) return false;
+                }
+            }
+            return true;
         }
 
         /// <summary>
