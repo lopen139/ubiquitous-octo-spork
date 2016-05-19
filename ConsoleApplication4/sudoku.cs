@@ -56,11 +56,12 @@ namespace ConsoleApplication4
                 {
                     solved = true;
                 }
-                else if (operation.val == -1 || !sudoku.solveable)
+                else if (operation.val == -1 /*|| !sudoku.solveable*/)
                 {
                     moreChildren = false;
                     //undo
                     sudoku.UndoLastOperation(parentOperation);
+                    //sudoku.solveable = true;
                     /*
                     Console.Clear();
                     Console.WriteLine("SUDOKU:");
@@ -93,6 +94,7 @@ namespace ConsoleApplication4
                     else
                     {
                         sudoku.UndoLastOperation(operation);
+                        sudoku.solveable = true;
                     }
                     lastOperation = operation;
                 }
@@ -374,7 +376,6 @@ namespace ConsoleApplication4
             if (puzzle[opp.x, opp.y] == 0) throw new Exception("Undoing on position not filled");
             puzzle[opp.x, opp.y] = 0;
             UpdatePossibleEntries(opp.x, opp.y);
-            solveable = true;
         }
     }
 }
