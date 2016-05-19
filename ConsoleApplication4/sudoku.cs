@@ -56,12 +56,12 @@ namespace ConsoleApplication4
                 {
                     solved = true;
                 }
-                else if (operation.val == -1)
+                else if (operation.val == -1 || !sudoku.solveable)
                 {
                     moreChildren = false;
                     //undo
                     sudoku.UndoLastOperation(parentOperation);
-
+                    /*
                     Console.Clear();
                     Console.WriteLine("SUDOKU:");
                     sudoku.PrintSudoku();
@@ -70,11 +70,13 @@ namespace ConsoleApplication4
                     Console.WriteLine("OPERATION");
                     Console.WriteLine(@"RES:: x: {0}, y: {1}, val: {2}, k: {3} ", operation.x, operation.y, operation.val, operation.lastChoosenBest);
                     System.Threading.Thread.Sleep(300);
+                    */
                 }
                 else
                 {
                     sudoku.AugmentSudoku(operation);
 
+                    /*
                     Console.Clear();
                     Console.WriteLine("SUDOKU:");
                     sudoku.PrintSudoku();
@@ -83,8 +85,15 @@ namespace ConsoleApplication4
                     Console.WriteLine("OPERATION");
                     Console.WriteLine(@"AUG:: x: {0}, y: {1}, val: {2}, k: {3} ",operation.x, operation.y, operation.val, operation.lastChoosenBest);
                     System.Threading.Thread.Sleep(300);
-
-                    Solve(operation);
+                    */
+                    if (sudoku.solveable)
+                    {
+                        Solve(operation);
+                    }
+                    else
+                    {
+                        sudoku.UndoLastOperation(operation);
+                    }
                     lastOperation = operation;
                 }
             }
@@ -98,10 +107,11 @@ namespace ConsoleApplication4
         private int sqrtN;
 
         /// <summary>
-        /// Array that holds the number of possible digits that are still a valid option for each coördinate
+        /// Array that holds the number of possible digits that are still a valid option for each coordinate
         /// </summary>
         private int[,] possibleEntries;
-        
+        public bool solveable = true;
+
         public Sudoku(string[] input)
         {
             n = input.Length;
@@ -134,7 +144,7 @@ namespace ConsoleApplication4
         }
 
         /// <summary>
-        /// Counts possible entries for a given coördinate
+        /// Counts possible entries for a given coordinate
         /// </summary>
         /// <param name="x"></param>
         /// <param name="y"></param>
@@ -146,18 +156,31 @@ namespace ConsoleApplication4
             for (int i = 0; i < n; i++)
             {
                 bools[puzzle[x, i]] = true;
-                bools[puzzle[i, x]] = true;
+                bools[puzzle[i, y]] = true;
+            }
+            int x_block = x - x % sqrtN;
+            int y_block = y - y % sqrtN;
+            for (int i = x_block; i < x_block + sqrtN; i++)
+            {
+                for (int j = y_block; j < y_block + sqrtN; j++)
+                {
+                    bools[puzzle[i, j]] = true;
+                }
             }
             int num = n;
             for (int i = 1; i < n + 1; i++)
             {
                 if (bools[i]) num--;
             }
+            if (num == 0)
+            {
+                solveable = false;
+            }
             return num;
         }
 
         /// <summary>
-        /// Subtracts 1 from the column and row of coördinate (x,y). Only call this method when a puzzle entrie is changed from 0 to i in 1..n, where the resulting puzzle is a valid sudoku.
+        /// Subtracts 1 from the column and row of coordinate (x,y). Only call this method when a puzzle entrie is changed from 0 to i in 1..n, where the resulting puzzle is a valid sudoku.
         /// </summary>
         /// <param name="x"></param>
         /// <param name="y"></param>
@@ -202,13 +225,13 @@ namespace ConsoleApplication4
             {
                 for (int y = 0; y < n; y++)
                 {
-                    if(!CheckCoördinate(x, y)) return false;
+                    if(!CheckCoordinate(x, y)) return false;
                 }
             }
             return true;
         }
 
-        private bool CheckCoördinate(int x, int y)
+        private bool CheckCoordinate(int x, int y)
         {
             int val = puzzle[x, y];
             //Test horizontal
@@ -235,12 +258,12 @@ namespace ConsoleApplication4
         }
         public Operation GetNewSudoku(Operation lastOperation)
         {
-            int lastChoosenBest = lastOperation.lastChoosenBest;
+            int lastChosenBest = lastOperation.lastChoosenBest;
             while (true)
             {
-                lastChoosenBest++;
-                if(lastChoosenBest > n*n) return new Operation(0, 0, -1, 0); //Branch dead
-                int[] c = FindKBestPossibleEntry(lastChoosenBest);
+                lastChosenBest++;
+                if(lastChosenBest > n*n) return new Operation(0, 0, -1, 0); //Branch dead
+                int[] c = FindKBestPossibleEntry(lastChosenBest);
                 if (c[0] == -1 || c[1] == -1)
                 {
                     //Branch dead
@@ -254,7 +277,7 @@ namespace ConsoleApplication4
                 }
                 for (int val = 1; val < n + 1; val++)
                 {
-                    if (TestOperation(c[0], c[1], val)) return new Operation(c[0], c[1], val, lastChoosenBest);
+                    if (TestOperation(c[0], c[1], val)) return new Operation(c[0], c[1], val, lastChosenBest);
                 }
             }           
         }
@@ -275,7 +298,7 @@ namespace ConsoleApplication4
         /// SLOW method of finding k best possible entrie
         /// </summary>
         /// <param name="k">1..N^2</param>
-        /// <returns>array with two elements: [0] = x-coördinate, [1] = y-coördinate</returns>
+        /// <returns>array with two elements: [0] = x-coordinate, [1] = y-coordinate</returns>
         private int[] FindKBestPossibleEntry(int k)
         {
             List<Tuple<int,int,int>> bestEntries = new List<Tuple<int, int, int>>();
@@ -351,6 +374,7 @@ namespace ConsoleApplication4
             if (puzzle[opp.x, opp.y] == 0) throw new Exception("Undoing on position not filled");
             puzzle[opp.x, opp.y] = 0;
             UpdatePossibleEntries(opp.x, opp.y);
+            solveable = true;
         }
     }
 }
