@@ -137,11 +137,21 @@ namespace ConsoleApplication4
         /// <returns></returns>
         private int CountPossibleEntries(int x, int y)
         {
+            if (puzzle[x, y] != 0) return 0;
             bool[] bools = new bool[n + 1];
             for (int i = 0; i < n; i++)
             {
                 bools[puzzle[x, i]] = true;
                 bools[puzzle[i, x]] = true;
+                int x_block = x - x % sqrtN;
+                int y_block = y - y % sqrtN;
+                for (int j = x_block; j < x_block + sqrtN; j++)
+                {
+                    for (int k = y_block; k < y_block + sqrtN; k++)
+                    {
+                        bools[puzzle[j, k]] = true;
+                    }
+                }
             }
             int num = n + 1;
             for (int i = 1; i < n + 1; i++)
@@ -156,26 +166,22 @@ namespace ConsoleApplication4
         /// </summary>
         /// <param name="x"></param>
         /// <param name="y"></param>
-        private void UpdatePossibleEntries(int x, int y, bool reset = false)
+        private void UpdatePossibleEntries(int x, int y)
         {
             for (int i = 0; i < n; i++)
             {
-                if (!reset)
+                possibleEntries[x, i] = CountPossibleEntries(x, i);
+                possibleEntries[i, y] = CountPossibleEntries(i, y);
+            }
+            int x_block = x - x % sqrtN;
+            int y_block = y - y % sqrtN;
+            for (int i = x_block; i < x_block + sqrtN; i++)
+            {
+                for (int j = y_block; j < y_block + sqrtN; j++)
                 {
-                    possibleEntries[x, i]--;
-                    possibleEntries[i, y]--;
-                    if (possibleEntries[x, i] < 0) possibleEntries[x, i] = 0; //Prevents minus signs in possibleEntries
-                    if (possibleEntries[i, y] < 0) possibleEntries[i, y] = 0;
-                }
-                else
-                {
-                    if (x == i) continue;
-                    possibleEntries[x, i]++;
-                    possibleEntries[i, y]++;
+                    possibleEntries[i, j] = CountPossibleEntries(i, j);
                 }
             }
-            if (!reset) possibleEntries[x, y] = 0;
-            else possibleEntries[x, y] = CountPossibleEntries(x, y);
         }
 
         /// <summary>
@@ -202,7 +208,7 @@ namespace ConsoleApplication4
             {
                 lastChoosenBest++;
                 if(lastChoosenBest > n*n) return new Operation(0, 0, -1, 0); //Branch dead
-                int[] c = FindKBestPossibleEntrie(lastChoosenBest);
+                int[] c = FindKBestPossibleEntry(lastChoosenBest);
                 if (c[0] == -1 || c[1] == -1)
                 {
                     //Branch dead
@@ -225,7 +231,7 @@ namespace ConsoleApplication4
         /// </summary>
         /// <param name="k">1..N^2</param>
         /// <returns>array with two elements: [0] = x-coördinate, [1] = y-coördinate</returns>
-        private int[] FindKBestPossibleEntrie(int k)
+        private int[] FindKBestPossibleEntry(int k)
         {
             int[][] bestEntries =  new int[k][];
             for (int x = 0; x < n; x++)
@@ -311,9 +317,10 @@ namespace ConsoleApplication4
 
         public void UndoLastOperation(Operation opp)
         {
+            if (opp.lastChoosenBest == 0) throw new Exception("k=0");
             if (puzzle[opp.x, opp.y] == 0) throw new Exception("Undoing on position not filled");
             puzzle[opp.x, opp.y] = 0;
-            UpdatePossibleEntries(opp.x, opp.y, true);
+            UpdatePossibleEntries(opp.x, opp.y);
         }
     }
 }
