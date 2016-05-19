@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace ConsoleApplication4
 {
@@ -59,6 +60,7 @@ namespace ConsoleApplication4
                     moreChildren = false;
                     //undo
                     sudoku.UndoLastOperation(parentOperation);
+
                     Console.Clear();
                     Console.WriteLine("SUDOKU:");
                     sudoku.PrintSudoku();
@@ -71,6 +73,7 @@ namespace ConsoleApplication4
                 else
                 {
                     sudoku.AugmentSudoku(operation);
+
                     Console.Clear();
                     Console.WriteLine("SUDOKU:");
                     sudoku.PrintSudoku();
@@ -79,6 +82,7 @@ namespace ConsoleApplication4
                     Console.WriteLine("OPERATION");
                     Console.WriteLine(@"AUG:: x: {0}, y: {1}, val: {2}, k: {3} ",operation.x, operation.y, operation.val, operation.lastChoosenBest);
                     System.Threading.Thread.Sleep(300);
+
                     Solve(operation);
                     lastOperation = operation;
                 }
@@ -225,38 +229,24 @@ namespace ConsoleApplication4
         /// </summary>
         /// <param name="k">1..N^2</param>
         /// <returns>array with two elements: [0] = x-coördinate, [1] = y-coördinate</returns>
-        private int[] FindKBestPossibleEntrie(int k)
+        private int[] FindKBestPossibleEntry(int k)
         {
-            int[][] bestEntries =  new int[k][];
+            List<int[]> bestEntries = new List<int[]> (new int[n*n][]);
+            bool onlyZeros = true;
             for (int x = 0; x < n; x++)
             {
                 for (int y = 0; y < n; y++)
                 {
-                    if (possibleEntries[x, y] == 0) continue;
-                    for (int i = 0; i < k; i++)
+                    if (possibleEntries[x, y] != 0)
                     {
-                        if (bestEntries[i] == null)
-                        {
-                            bestEntries[i] = new[] {x, y};
-                            break;
-                        }
-                        if (possibleEntries[bestEntries[i][0], bestEntries[i][1]] >= possibleEntries[x, y])
-                        {
-                            //shift array:
-                            for (int j = k - 1; j > i; j--)
-                            {
-                                if (bestEntries[j] == null) continue;
-                                bestEntries[j] = bestEntries[j - 1];
-                            }
-                            //insert into array:
-                            bestEntries[i][0] = x;
-                            bestEntries[i][1] = y;
-                        }
+                        onlyZeros = false;
+                        bestEntries.Add(new int[] { x, y });
                     }
                 }
             }
-            if (possibleEntries[bestEntries[0][0], bestEntries[0][1]] == 0) return new [] { -2, -2 }; //Answer found if best answer is zero
-            if (bestEntries[k - 1] == null || possibleEntries[bestEntries[k - 1][0], bestEntries[k - 1][1]] == 0) return new[] { -1, -1 }; //Branch dead if best answer is not zero, but k best answer is zero.
+            if (onlyZeros) return new[] { -2, -2 }; //Possible answer found if all entries are zero
+            bestEntries.Sort((a,b) => possibleEntries[a[0], a[1]].CompareTo(possibleEntries[b[0], b[1]]));
+            if(bestEntries.Count < k) return new[] { -1, -1 }; //Branch dead there is no k-best entry
             return bestEntries[k - 1];
         }
 
