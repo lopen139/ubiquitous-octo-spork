@@ -10,12 +10,27 @@ namespace ConsoleApplication4
     {
         static void Main(string[] args)
         {
-            var input = System.IO.File.ReadAllLines("..\\..\\puzzels\\25x25_1.txt");
+            Console.WriteLine("Please choose solve version.");
+            int version = Int32.Parse(Console.ReadLine());
+            var input = System.IO.File.ReadAllLines("..\\..\\puzzels\\1.txt");
             //var sudoku = new Sudoku(input);
             //sudoku.PrintSudoku();
-            SudokuSolver solver = new SudokuSolver();
-            solver.SolveSudoku(input);
-            solver.sudoku.PrintSudoku();
+            if (version == 1)
+            {
+                SudokuSolver solver = new SudokuSolver();
+                solver.SolveSudoku(input);
+                solver.sudoku.PrintSudoku();
+            }
+            else if (version == 2)
+            {
+                SudokuSolver solver = new SudokuSolver();
+                solver.BT2SolveSudoku(input);
+                solver.sudoku.PrintSudoku();
+            }
+            else
+            {
+                throw new Exception("Unrecognized version number!");
+            }
             Console.ReadLine();
         }
     }

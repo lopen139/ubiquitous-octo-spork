@@ -68,12 +68,55 @@ namespace ConsoleApplication4
                 }
             }
         }
+
+        public Sudoku BT2SolveSudoku(string[] input)
+        {
+            //implementatie van opdracht 2
+            sudoku = new Sudoku(input);
+            sudoku.PrintSudoku();
+            sudoku.InitializePossGrid();
+            BT2Solve(new Operation(0, 0, 0));
+            return sudoku;
+
+        }
+        private void BT2Solve(Operation lastOperation)
+        {
+            bool moreChildren = true;
+            var parentOperation = lastOperation;
+            int xbest = 0;
+            while(!solved && moreChildren)
+            {
+                Tuple<Operation,int> result = sudoku.GetNewPossSudoku(lastOperation, xbest);
+                var operation = result.Item1;
+                xbest = result.Item2;
+                if(operation.val == -2) //solved
+                { solved = true; }
+                else if (operation.val == -1) //dead branch
+                { 
+                    moreChildren = false;
+                    sudoku.UndoLastOperation(parentOperation);
+                }
+                else
+                {
+                    sudoku.AugmentSudoku(operation);
+                    Console.Clear();
+                    sudoku.PrintSudoku();
+                    System.Threading.Thread.Sleep(300);
+                    BT2Solve(operation);
+                    lastOperation = operation;
+                }
+
+            }
+        }
+
     }
 
     class Sudoku
     {
         private int n;
         private int[,] puzzle;
+        //public int[,] possGrid;
+        public Tuple<int, int, int>[] possGrid;
         private int sqrtN;
         
         public Sudoku(string[] input)
@@ -191,6 +234,107 @@ namespace ConsoleApplication4
         public void UndoLastOperation(Operation opp)
         {
             puzzle[opp.x, opp.y] = 0;
+        }
+
+        public void InitializePossGrid()
+        {
+            possGrid = new Tuple<int, int, int>[n*n];
+            int x = 0;
+            for (int i = 0; i<n; i++)
+            {
+                for (int j = 0; j<n; j++)
+                {
+                    //tpossGrid[i,j] = countPoss(i, j);
+                    int val = countPoss(i, j);
+                    possGrid[x] = new Tuple<int, int, int>(val, i, j);
+                    x++;
+                }
+            }
+            Array.Sort(possGrid);
+            
+        }
+
+        private int countPoss(int x, int y)
+        {
+            //square isn't empty
+            if (puzzle[x, y] != 0) return 0;
+
+            bool[] bools = new bool[n+1];
+            for(int i = 0; i < n+1; i++)
+            { bools[i] = false; }
+            //check horizontal and vertical lines
+            for(int i = 0; i<n; i++)
+            {
+               bools[puzzle[x, i]] = true;
+               bools[puzzle[i, y]] = true;
+            }
+            //check surrouding square
+            int x_block = x - x % sqrtN;
+            int y_block = y - y % sqrtN;
+            for (int i = x_block; i < x_block + sqrtN; i++)
+            {
+                for (int j = y_block; j < y_block + sqrtN; j++)
+                {
+                    bools[puzzle[i, j]] = true;
+                }
+            }
+            int num = n;
+            for (int i = 1; i<n+1; i++)
+            {
+                if (bools[i]) num--;
+            }
+            return n;
+        }
+
+        public Tuple<Operation, int> GetNewPossSudoku(Operation lastOperation, int k)
+        {
+            int x = possGrid[k].Item2;
+            int y = possGrid[k].Item3;
+            int val = 0;
+            if (lastOperation.x == x && lastOperation.y == y)
+            { val = lastOperation.val; } 
+            int xbest = k;
+            while (true)
+            {
+                if (puzzle[x,y] != 0)
+                {
+                    xbest++;
+                    x = possGrid[xbest].Item2;
+                    y = possGrid[xbest].Item3;
+                }
+                else
+                { break; }
+            }
+            bool found = false;
+            while (!found)
+            {
+
+                if (val <= n)
+                {
+                    found =TestOperation(x, y, val) ;
+                    if (!found) val++;
+                }
+                else if (xbest > n*n)
+                {
+                    if (CheckSudoku())
+                    { 
+                        //solved
+                        return new Tuple<Operation, int>(new Operation(x, y, -2), xbest); 
+                    }
+
+                    else
+                    { return new Tuple<Operation, int>(new Operation(x, y, -1), xbest); } //branch dead
+                }
+                else
+                {
+                    xbest++;
+                    if (xbest >= n * n) return new Tuple<Operation, int>(new Operation(x, y, -1), xbest); //branch dead
+                    x = possGrid[xbest].Item2;
+                    y = possGrid[xbest].Item3;
+                    val = puzzle[x, y];
+                }
+            }
+            return new Tuple<Operation, int>(new Operation(x, y, val), xbest);
         }
     }
 }
