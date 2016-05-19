@@ -266,12 +266,14 @@ namespace ConsoleApplication4
         /// <param name="opp">Operation done on the sudoku</param>
         public void AugmentSudoku(Operation opp)
         {
+            if (puzzle[opp.x, opp.y] != 0) throw new Exception("Augmenting on position already occupied");
             puzzle[opp.x, opp.y] = opp.val;
             UpdatePossibleEntries(opp.x, opp.y);
         }
 
         private bool TestOperation(int x, int y, int val)
         {
+            if (puzzle[x, y] != 0) return false;
             //Test horizontal
             for (int i = 0; i < n -1; i++)
             {
@@ -309,6 +311,7 @@ namespace ConsoleApplication4
 
         public void UndoLastOperation(Operation opp)
         {
+            if (puzzle[opp.x, opp.y] == 0) throw new Exception("Undoing on position not filled");
             puzzle[opp.x, opp.y] = 0;
             UpdatePossibleEntries(opp.x, opp.y, true);
         }
