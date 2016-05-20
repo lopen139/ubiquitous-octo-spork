@@ -88,23 +88,28 @@ namespace ConsoleApplication4
             {
                 Tuple<Operation,int> result = sudoku.GetNewPossSudoku(lastOperation, xbest);
                 var operation = result.Item1;
-                xbest = result.Item2;
+                //xbest = result.Item2;
                 if(operation.val == -2) //solved
                 { solved = true; }
                 else if (operation.val == -1 || xbest >= sudoku.n*sudoku.n) //dead branch
                 { 
                     moreChildren = false;
                     sudoku.UndoLastOperation(parentOperation);
+                    xbest--;
                 }
                 else
                 {
                     sudoku.AugmentSudoku(operation);
                     Console.Clear();
-                    sudoku.PrintSudoku();
-                    PrintPossGrid();
-                    System.Threading.Thread.Sleep(300);
+                    if (xbest > 70)
+                    {
+                        sudoku.PrintSudoku();
+                        PrintPossGrid();
+                        System.Threading.Thread.Sleep(100);
+                    }
                     BT2Solve(operation, xbest);
                     lastOperation = operation;
+                    xbest++;
                 }
 
             }
@@ -315,8 +320,9 @@ namespace ConsoleApplication4
             { val = lastOperation.val; }
             val++;
             int xbest = k;
-            while (true)
-            {
+            if (puzzle[x, y] != 0) return new Tuple<Operation, int>(new Operation(x, y, puzzle[x,y]), xbest);
+           /*while (true)
+           {
                 if (puzzle[x,y] != 0)
                 {
                     
@@ -337,9 +343,28 @@ namespace ConsoleApplication4
                 }
                 else
                 { break; }
-            }
+            }*/
             bool found = false;
-            while (!found)
+            while(!found)
+            {
+                if (val <= n)
+                {
+                    found = TestOperation(x,y,val);
+                    if (!found) val++;
+                }
+                else
+                {
+                    if (CheckSudoku())
+                    { 
+                        //solved
+                        return new Tuple<Operation, int>(new Operation(x, y, -2), xbest); 
+                    }
+
+                    else
+                    { return new Tuple<Operation, int>(new Operation(x, y, -1), xbest); } //branch dead
+                }
+            }
+            /*while (!found)
             {
 
                 if (val <= n)
@@ -358,18 +383,18 @@ namespace ConsoleApplication4
                     else
                     { return new Tuple<Operation, int>(new Operation(x, y, -1), xbest); } //branch dead
                 }
-                else
+               else
                 {
                     xbest++;
                     if (xbest >= n * n) return new Tuple<Operation, int>(new Operation(x, y, -1), xbest); //branch dead
                     x = possGrid[xbest].Item2;
                     y = possGrid[xbest].Item3;
                     val = puzzle[x, y];
-                }
-            }
+                }*/
+            //}
 
             Console.WriteLine(xbest);
-            System.Threading.Thread.Sleep(100);
+            //System.Threading.Thread.Sleep(100);
             return new Tuple<Operation, int>(new Operation(x, y, val), xbest);
         }
     }

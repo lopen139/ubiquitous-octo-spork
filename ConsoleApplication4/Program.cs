@@ -23,8 +23,8 @@ namespace ConsoleApplication4
             }
             else if (version == 2)
             {
-                SudokuSolver solver = new SudokuSolver();
-                solver.BT2SolveSudoku(input);
+                SudokuSolver2 solver = new SudokuSolver2();
+                solver.SolveSudoku(input);
                 solver.sudoku.PrintSudoku();
             }
             else
