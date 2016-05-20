@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace ConsoleApplication4
 {
 
-    struct Operation
+    public struct Operation
     {
         public int x;
         public int y;
@@ -22,7 +22,7 @@ namespace ConsoleApplication4
         }
     }
 
-    internal class SudokuSolver
+    public class SudokuSolver
     {
         public Sudoku sudoku;
         private bool solved;
@@ -32,6 +32,13 @@ namespace ConsoleApplication4
             sudoku = new Sudoku(input);
             sudoku.PrintSudoku();
             Solve(new Operation(0,0,0));
+            return sudoku;
+        }
+        public Sudoku SolveSudoku(int[,] input , int n)
+        {
+            sudoku = new Sudoku(input, n);
+            sudoku.PrintSudoku();
+            Solve(new Operation(0, 0, 0));
             return sudoku;
         }
 
@@ -130,7 +137,7 @@ namespace ConsoleApplication4
         }
     }
 
-    class Sudoku
+    public class Sudoku
     {
         public int n;
         private int[,] puzzle;
@@ -138,6 +145,13 @@ namespace ConsoleApplication4
         public Tuple<int, int, int>[] possGrid;
         private int sqrtN;
         
+        public Sudoku(int[,] _puzzle, int _n)
+        {
+            puzzle = _puzzle;
+            n = _n;
+            sqrtN = Convert.ToInt32(Math.Sqrt(n));
+        }
+
         public Sudoku(string[] input)
         {
 
