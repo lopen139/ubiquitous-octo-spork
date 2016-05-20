@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -27,6 +28,10 @@ namespace ConsoleApplication4
         public Sudoku sudoku;
         private bool solved;
 
+        public long steps = 0;
+        public long solveTime;
+        public long solveTicks;
+
         public Sudoku SolveSudoku(string[] input)
         {
             sudoku = new Sudoku(input);
@@ -38,12 +43,19 @@ namespace ConsoleApplication4
         {
             sudoku = new Sudoku(input, n);
             sudoku.PrintSudoku();
+            Stopwatch watch = new Stopwatch();
+            watch.Start();
             Solve(new Operation(0, 0, 0));
+            watch.Stop();
+            solveTime = watch.ElapsedMilliseconds;
+            solveTicks = watch.ElapsedTicks;
+
             return sudoku;
         }
 
         public void Solve(Operation lastOperation)
         {
+            steps++;
             //TODO: iets met een stack en een while loop..
             //TODO: check voor "dead end": kijken of de sudoku helemaal is ingevuld of niet. Test sudoku methode?
             //TODO: alleen nullen morgen verandert worden.

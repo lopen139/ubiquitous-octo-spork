@@ -1,16 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace ConsoleApplication4
 {
-    internal class SudokuSolver2
+    public class SudokuSolver2
     {
         public Sudoku2 sudoku;
         public int xbest = 0;
         private bool solved;
+
+        public long steps = 0;
+        public long solveTime;
+        public long solveTicks;
 
         public Sudoku2 SolveSudoku(string[] input)
         {
@@ -21,9 +26,22 @@ namespace ConsoleApplication4
             Solve(new Operation(0, 0, 0));
             return sudoku;
         }
+        public Sudoku2 SolveSudoku(int[,] input, int n)
+        {
+            sudoku = new Sudoku2(input, n);
+            Stopwatch watch = new Stopwatch();
+            watch.Start();
+            sudoku.InitializePossGrid();
+            Solve(new Operation(0, 0, 0));
+            watch.Stop();
+            solveTime = watch.ElapsedMilliseconds;
+            solveTicks = watch.ElapsedTicks;
+            return sudoku;
+        }
 
         private void Solve(Operation parentOperation)
         {
+            steps++;
             bool moreChildren = true;
             var lastOperation = parentOperation;
             while (!solved && moreChildren)
@@ -68,7 +86,7 @@ namespace ConsoleApplication4
         }
 
     }
-    class Sudoku2
+    public class Sudoku2
     {
         public int n;
         private int[,] puzzle;
@@ -90,6 +108,13 @@ namespace ConsoleApplication4
                     puzzle[i, j] = int.Parse(numstr);
                 }
             }
+            sqrtN = Convert.ToInt32(Math.Sqrt(n));
+        }
+
+        public Sudoku2(int[,] _puzzle, int _n)
+        {
+            puzzle = _puzzle;
+            n = _n;
             sqrtN = Convert.ToInt32(Math.Sqrt(n));
         }
 

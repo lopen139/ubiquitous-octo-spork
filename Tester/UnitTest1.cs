@@ -2,6 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using ConsoleApplication4;
+using System.Linq;
 
 namespace Tester
 {
@@ -11,39 +12,39 @@ namespace Tester
         [TestMethod]
         public void Test1()
         {
-            var input = System.IO.File.ReadAllLines("..\\..\\puzzles\\p096_sudoku.txt");
-            var parsed = Parser.Parser_p096(input);
-            int i = 0;
-            int n = 9;
-            foreach (var test in parsed)
-            {
-                Console.WriteLine("SUDOKU #{0}:" , i);
-                Console.WriteLine("unsolved");
-                SudokuSolver solver = new SudokuSolver();
-                solver.SolveSudoku(test, n);
-                Console.WriteLine("solved");
-                solver.sudoku.PrintSudoku();
-                i++;
-            }
+            RunTest("p096_sudoku", 1);
+            RunTest("p096_sudoku", 2);
+            //RunTest("su17ExtremeDiff500", 1);
+            //RunTest("su17ExtremeDiff500", 2);
         }
-        [TestMethod]
-        public void Test2()
+
+        public void RunTest(string fileName, int mode)
         {
-            var input = System.IO.File.ReadAllLines("..\\..\\puzzles\\su17ExtremeDiff500.txt");
-            var parsed = Parser.Parser_su17(input);
+            var input = System.IO.File.ReadAllLines("..\\..\\puzzles\\" + fileName + ".txt");
+            List<int[,]> parsed;
+            if (fileName == "p096_sudoku") parsed = Parser.Parser_p096(input);
+            else if (fileName == "su17ExtremeDiff500") parsed = Parser.Parser_su17(input);
+            else throw new Exception("no valid filename");
             int i = 0;
             int n = 9;
-            foreach (var test in parsed)
+            string write = "#sudoku #steps  #time   #ticks" + Environment.NewLine;
+            foreach (var test1 in parsed)
             {
-                Console.WriteLine("SUDOKU #{0}:", i);
-                Console.WriteLine("unsolved");
-                SudokuSolver solver = new SudokuSolver();
-                solver.SolveSudoku(test, n);
-                Console.WriteLine("solved");
-                solver.sudoku.PrintSudoku();
+                if (mode == 1)
+                {
+                    SudokuSolver solver = new SudokuSolver();
+                    solver.SolveSudoku(test1, n);
+                    write += i + " " + solver.steps + "    " + solver.solveTime + "    " + solver.solveTicks + Environment.NewLine;
+                }
+                if (mode == 2)
+                {
+                    SudokuSolver2 solver = new SudokuSolver2();
+                    solver.SolveSudoku(test1, n);
+                    write += i + " " + solver.steps + "    " + solver.solveTime + "    " + solver.solveTicks + Environment.NewLine;
+                }
                 i++;
-                return;
             }
+            System.IO.File.WriteAllText("..\\..\\puzzles\\out" + mode + "_" + fileName + ".txt", write);
         }
     }
 
