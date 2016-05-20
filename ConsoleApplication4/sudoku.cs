@@ -75,15 +75,15 @@ namespace ConsoleApplication4
             sudoku = new Sudoku(input);
             sudoku.PrintSudoku();
             sudoku.InitializePossGrid();
-            BT2Solve(new Operation(0, 0, 0));
+            BT2Solve(new Operation(0, 0, 0), 0);
             return sudoku;
 
         }
-        private void BT2Solve(Operation lastOperation)
+        private void BT2Solve(Operation lastOperation, int k)
         {
             bool moreChildren = true;
             var parentOperation = lastOperation;
-            int xbest = 0;
+            int xbest = k;
             while(!solved && moreChildren)
             {
                 Tuple<Operation,int> result = sudoku.GetNewPossSudoku(lastOperation, xbest);
@@ -91,7 +91,7 @@ namespace ConsoleApplication4
                 xbest = result.Item2;
                 if(operation.val == -2) //solved
                 { solved = true; }
-                else if (operation.val == -1) //dead branch
+                else if (operation.val == -1 || xbest >= sudoku.n*sudoku.n) //dead branch
                 { 
                     moreChildren = false;
                     sudoku.UndoLastOperation(parentOperation);
@@ -101,19 +101,38 @@ namespace ConsoleApplication4
                     sudoku.AugmentSudoku(operation);
                     Console.Clear();
                     sudoku.PrintSudoku();
+                    PrintPossGrid();
                     System.Threading.Thread.Sleep(300);
-                    BT2Solve(operation);
+                    BT2Solve(operation, xbest);
                     lastOperation = operation;
                 }
 
             }
         }
 
+        private void PrintPossGrid()
+        {
+            int[,] possgrid = new int[sudoku.n, sudoku.n];
+            foreach (Tuple<int, int, int> T in sudoku.possGrid)
+            {
+                possgrid[T.Item2, T.Item3] = T.Item1;
+            }
+            Console.WriteLine("______________");
+            for (int i = 0; i < sudoku.n; i++)
+            {
+                for (int j = 0; j < sudoku.n; j++)
+                {
+                    Console.Write(possgrid[i, j]);
+                    Console.Write(" ");
+                }
+                Console.WriteLine();
+            }
+        }
     }
 
     class Sudoku
     {
-        private int n;
+        public int n;
         private int[,] puzzle;
         //public int[,] possGrid;
         public Tuple<int, int, int>[] possGrid;
@@ -196,6 +215,7 @@ namespace ConsoleApplication4
 
         private bool TestOperation(int x, int y, int val)
         {
+            if (puzzle[x, y] != 0) return false;
             //Test horizontal
             for (int i = 0; i < n -1; i++)
             {
@@ -283,7 +303,7 @@ namespace ConsoleApplication4
             {
                 if (bools[i]) num--;
             }
-            return n;
+            return num;
         }
 
         public Tuple<Operation, int> GetNewPossSudoku(Operation lastOperation, int k)
@@ -292,13 +312,26 @@ namespace ConsoleApplication4
             int y = possGrid[k].Item3;
             int val = 0;
             if (lastOperation.x == x && lastOperation.y == y)
-            { val = lastOperation.val; } 
+            { val = lastOperation.val; }
+            val++;
             int xbest = k;
             while (true)
             {
                 if (puzzle[x,y] != 0)
                 {
+                    
                     xbest++;
+                    if (xbest >= n * n)
+                    {
+                        if (CheckSudoku())
+                        {
+                            //solved
+                            return new Tuple<Operation, int>(new Operation(x, y, -2), xbest);
+                        }
+
+                        else
+                        { return new Tuple<Operation, int>(new Operation(x, y, -1), xbest); } //branch dead
+                    }
                     x = possGrid[xbest].Item2;
                     y = possGrid[xbest].Item3;
                 }
@@ -334,6 +367,9 @@ namespace ConsoleApplication4
                     val = puzzle[x, y];
                 }
             }
+
+            Console.WriteLine(xbest);
+            System.Threading.Thread.Sleep(100);
             return new Tuple<Operation, int>(new Operation(x, y, val), xbest);
         }
     }
