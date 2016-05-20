@@ -12,7 +12,7 @@ namespace Tester
         [TestMethod]
         public void Test1()
         {
-            RunTest("p096_sudoku", 1);
+            //RunTest("p096_sudoku", 1);
             RunTest("p096_sudoku", 2);
             //RunTest("su17ExtremeDiff500", 1);
             //RunTest("su17ExtremeDiff500", 2);
@@ -32,9 +32,9 @@ namespace Tester
             {
                 if (mode == 1)
                 {
-                    SudokuSolver solver = new SudokuSolver();
-                    solver.SolveSudoku(test1, n);
-                    write += i + " " + solver.steps + "    " + solver.solveTime + "    " + solver.solveTicks + Environment.NewLine;
+                    SudokuSolver1 solver1 = new SudokuSolver1();
+                    solver1.SolveSudoku(test1, n);
+                    write += i + " " + solver1.steps + "    " + solver1.solveTime + "    " + solver1.solveTicks + Environment.NewLine;
                 }
                 if (mode == 2)
                 {
@@ -43,8 +43,13 @@ namespace Tester
                     write += i + " " + solver.steps + "    " + solver.solveTime + "    " + solver.solveTicks + Environment.NewLine;
                 }
                 i++;
+                if (i == 35) break;
+
+                Console.WriteLine(@"Sudoku {0} solved", i - 1);
             }
-            System.IO.File.WriteAllText("..\\..\\puzzles\\out" + mode + "_" + fileName + ".txt", write);
+            string loc = "..\\..\\puzzles\\out" + mode + "_" + fileName + ".txt";
+            System.IO.File.WriteAllText(loc, write);
+            Console.WriteLine(@"Output saved to file: " + loc);
         }
     }
 
