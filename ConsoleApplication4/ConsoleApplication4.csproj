@@ -57,6 +57,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="sudoku1.cs" />
     <Compile Include="sudoku2.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -90,6 +91,17 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="puzzles\16x16_1.txt" />
+    <Content Include="puzzles\16x16_2.txt" />
+    <Content Include="puzzles\16x16_3.txt" />
+    <Content Include="puzzles\25x25_1.txt" />
+    <Content Include="puzzles\25x25_2.txt" />
+    <Content Include="puzzles\out1_p096_sudoku.txt" />
+    <Content Include="puzzles\out2_p096_sudoku.txt" />
+    <Content Include="puzzles\p096_sudoku.txt" />
+    <Content Include="puzzles\su17ExtremeDiff500.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
