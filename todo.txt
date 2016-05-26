@@ -1,5 +1,28 @@
 Code:
-
+	- Methode die sudoku random invult:
+		- Blok random invullen
+		- Toepassen op elk blok
+	- Hill climbing methode:
+		- Genereer first improvement (random)
+		- Augmenteer sudoku met first improvement
+		- Terminatie conditie: wat te doen op plateaus?
+	- Multi-start local search methode:
+		- Genereer random sudoku
+		- pas Hill climbing toe
+		- bij vastlopen -> doe nogmaals
+		- termineer bij gevonden sudoku
+	- Iterated local search methode:
+		- Zoek lokaal maximum met Hill climbing.
+		- Doe pertubatie op best gevonde maximum tot dan toe:
+			- Random walk voor k stappen
+		- Bij n maal terugkomen, vergroot k om uit attractievel te ontsnappen
+		- termineer bij gevonden sudoku
+	- Tabu search:
+		- Hill-climbing met aanpassing:
+			- ga naar de beste toegestane toestand, ook hij slechter is
+			- zet vorige toestand voorop de tabu-lijst (laatste element valt er af)
+		- termineer bij gevonden sudoku (of als je n stappen geen verbetering hebt gezien)
+		
 Report:
 
 Inleveren:
