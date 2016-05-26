@@ -1,15 +1,5 @@
 Code:
-	- Deel 2 implementeren
-	- Refactoren met comments
-	- Testclasses maken en wat efficientie data vergaren
-	- opt: naïve backtracking
-Report:
-	- uitleg datastructuur sudoku
-	- beschrijving BackTrack algorimte
-	- rapporteren efficiëntie
-	- bespreken resultaten
 
+Report:
 
 Inleveren:
-	- Report
-	- Code
