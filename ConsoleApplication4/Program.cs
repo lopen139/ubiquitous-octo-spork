@@ -7,11 +7,19 @@ namespace ConsoleApplication4
     {
         static void Main(string[] args)
         {
+            string file = "..\\..\\puzzles\\1.txt";
+            string[] read = System.IO.File.ReadAllLines(file);
+            var input = Parser.Parser_p096(read);
+            HillSudoku h = new HillSudoku(input[0], 9);
+            h.RandomizeSudoku();
+            h.PrintSudoku();
+            h.RandomizeSudoku();
+            h.PrintSudoku();
             //Sudoku Set 1
-            Console.WriteLine("<>-------- Solving p096_sudoku with method 1 --------<>");
-            RunTest("p096_sudoku", 1);
-            Console.WriteLine("<>-------- Solving p096_sudoku with method 2 --------<>");
-            RunTest("p096_sudoku", 2);
+           // Console.WriteLine("<>-------- Solving p096_sudoku with method 1 --------<>");
+            //RunTest("p096_sudoku", 1);
+            //Console.WriteLine("<>-------- Solving p096_sudoku with method 2 --------<>");
+            //RunTest("p096_sudoku", 2);
             //Sudoku Set 2: hard
             //Console.WriteLine("<>-------- Solving su17ExtremeDiff500 with method 1 --------<>");
             //RunTest("su17ExtremeDiff500", 1);
