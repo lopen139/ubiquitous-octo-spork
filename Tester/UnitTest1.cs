@@ -9,7 +9,7 @@ namespace Tester
     [TestClass]
     public class Analyzer
     {
-        [TestMethod]
+        //[TestMethod]
         public void Test1()
         {
             //RunTest("p096_sudoku", 1);

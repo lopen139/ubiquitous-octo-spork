@@ -11,9 +11,12 @@ namespace ConsoleApplication4
             string[] read = System.IO.File.ReadAllLines(file);
             var input = Parser.Parser_p096(read);
             HillSudoku h = new HillSudoku(input[0], 9);
-            h.RandomizeSudoku();
+
+            Random rand = new Random();
+
+            h.RandomizeSudoku(rand);
             h.PrintSudoku();
-            h.RandomizeSudoku();
+            h.RandomizeSudoku(rand);
             h.PrintSudoku();
             //Sudoku Set 1
            // Console.WriteLine("<>-------- Solving p096_sudoku with method 1 --------<>");

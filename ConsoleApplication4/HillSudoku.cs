@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ConsoleApplication4
 {
-    class HillSudoku : Sudoku
+    public class HillSudoku : Sudoku
     {
         public int[,] hillpuzzle;
 
@@ -32,10 +32,9 @@ namespace ConsoleApplication4
                 Console.WriteLine();
             }
         }
-        public void RandomizeSudoku()
+        public void RandomizeSudoku(Random random)
         {
             hillpuzzle = new int[n, n];
-            Random random = new Random();
             for(int yblock = 1; yblock<=3; yblock++)
             {
                 for(int xblock =1; xblock <=3; xblock++)

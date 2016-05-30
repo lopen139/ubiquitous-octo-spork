@@ -1,17 +1,20 @@
 ﻿using System;
+using System.Linq;
 
 namespace ConsoleApplication4
 {
     /// <summary>
     /// Finds local minimum for a given faulty-sudoku instance 
     /// </summary>
-    class HillClimber
+    public class HillClimber
     {
         public HillSudoku state;
         private bool[,] conflictArray;
         private int[] fitnessX;
         private int[] fitnessY;
-        private int steps;
+        public int steps;
+        public int restarts;
+        public Random random;
 
         public HillClimber(HillSudoku _state)
         {
@@ -19,12 +22,60 @@ namespace ConsoleApplication4
             CalculateFitness();
             //FillConflictArray();
             steps = 0;
+            restarts = 0;
+        }
+
+        public void RandomRestartHillClimb(Random _random, bool print = false, int maxRestarts = int.MaxValue)
+        {
+            if(print) Console.WriteLine("Begin Random-restart Hill-climbing");
+            int best = 0;
+            random = _random;
+            bool solutionFound = false;
+            while (!solutionFound)
+            {
+                restarts++;
+                ResetInstant();
+                HillClimb();
+                int fit = TotalFitness();
+                if (print)
+                {
+                    if (fit > best)
+                    {
+                        best = fit;
+                        Console.WriteLine("new best fit: {0}. run: {1}",best,restarts);
+                    }
+                }
+                if (fit == 2*state.n*state.n) solutionFound = true;
+                if (restarts == maxRestarts) break;
+            }
+            if (print && !solutionFound) Console.WriteLine("No solution found in {0} restarts.", maxRestarts);
+            if (print && solutionFound)
+            {
+                Console.WriteLine("Solution found:");
+                state.PrintSudoku();
+                Console.WriteLine("---------------");
+            }
+        }
+
+        public int TotalFitness()
+        {
+            return fitnessX.Sum() + fitnessY.Sum();
+        }
+
+        /// <summary>
+        /// Resets the sudoku to new random instant
+        /// </summary>
+        public void ResetInstant()
+        {
+            state.RandomizeSudoku(random);
+            CalculateFitness();
+            steps = 0;
         }
 
         /// <summary>
         /// Fills the fitness arrays (from scratch)
         /// </summary>
-        private void CalculateFitness()
+        public void CalculateFitness()
         {
             fitnessX = new int[state.n];
             fitnessY = new int[state.n];
@@ -41,7 +92,7 @@ namespace ConsoleApplication4
         /// </summary>
         /// <param name="y">RowNumber</param>
         /// <returns>Fitness</returns>
-        private int RowFitness(int y)
+        public int RowFitness(int y)
         {
             bool[] present = new bool[state.n + 1];
             for(int i = 0; i < state.n; i++)
@@ -63,7 +114,7 @@ namespace ConsoleApplication4
         /// </summary>
         /// <param name="x">ColumnNumber</param>
         /// <returns>Fitness</returns>
-        private int ColumnFitness(int x)
+        public int ColumnFitness(int x)
         {
             bool[] present = new bool[state.n + 1];
             for (int i = 0; i < state.n; i++)
@@ -82,13 +133,13 @@ namespace ConsoleApplication4
         /// <summary>
         /// Calculate, for each cell, if there is a conflict (from scratch).
         /// </summary>
-        private void FillConflictArray()
+        public void FillConflictArray()
         {
             for(int x = 0; x < state.n; x++)
             {
                 for (int y = 0; y < state.n; y++)
                 {
-                    conflictArray[x, y] = CheckFonflicts(x, y);
+                    conflictArray[x, y] = CheckConflicts(x, y);
                 }
             }
         }
@@ -98,15 +149,15 @@ namespace ConsoleApplication4
         /// </summary>
         /// <param name="x">RowNumber</param>
         /// <param name="y">ColumnNmber</param>
-        /// <returns>conflict</returns>
-        private bool CheckFonflicts(int x, int y)
+        /// <returns>true: conflict, false: no conflict</returns>
+        public bool CheckConflicts(int x, int y)
         {
             for (int i = 0; i < state.n; i++)
             {
-                if (state.hillpuzzle[x, y] == state.hillpuzzle[i, y] && x != i) return false;
-                if (state.hillpuzzle[x, y] == state.hillpuzzle[x, i] && y != i) return false;
+                if (state.hillpuzzle[x, y] == state.hillpuzzle[i, y] && x != i) return true;
+                if (state.hillpuzzle[x, y] == state.hillpuzzle[x, i] && y != i) return true;
             }
-            return true;
+            return false;
         }
 
         /// <summary>
@@ -126,13 +177,13 @@ namespace ConsoleApplication4
         /// Looks for conflict and makes a swap
         /// </summary>
         /// <returns>true: swap was made , false: no imroving swaps</returns>
-        private bool FindConflict()
+        public bool FindConflict()
         {
             for (int x = 0; x < state.n; x++)
             {
                 for (int y = 0; y < state.n; y++)
                 {
-                    if (CheckFonflicts(x,y))
+                    if (CheckConflicts(x,y))
                     {
                        if(SwapCell(x, y)) return true;
                     }
@@ -148,7 +199,7 @@ namespace ConsoleApplication4
         /// <param name="x">RowNumber</param>
         /// <param name="y">ColumnNumber</param>
         /// <returns>true: swap was made, false: no improving swaps</returns>
-        private bool SwapCell(int x, int y)
+        public bool SwapCell(int x, int y)
         {
             int x_block = x - (x % state.sqrtN);
             int y_block = y - (y % state.sqrtN);
@@ -156,7 +207,7 @@ namespace ConsoleApplication4
             {
                 for (int j = y_block; j < y_block + state.sqrtN; j++)
                 {
-                    if (CheckFonflicts(i, j) && FitnessImproved(x, y, i, j)) return true;
+                    if (CheckConflicts(i, j) && FitnessImproved(x, y, i, j)) return true;
                 }
             }
             return false;
@@ -172,7 +223,7 @@ namespace ConsoleApplication4
         /// <param name="x2"></param>
         /// <param name="y2"></param>
         /// <returns>true: swap increases fitness, false: swap does not increase fitness</returns>
-        private bool FitnessImproved(int x1, int y1, int x2, int y2)
+        public bool FitnessImproved(int x1, int y1, int x2, int y2)
         {
             //Calculate current fitness
             int combinedFitness = CombinedFitness(x1, y1, x2, y2);
@@ -203,7 +254,7 @@ namespace ConsoleApplication4
         /// <param name="y1"></param>
         /// <param name="x2"></param>
         /// <param name="y2"></param>
-        private void UpdateFitness(int x1, int y1, int x2, int y2)
+        public void UpdateFitness(int x1, int y1, int x2, int y2)
         {
             fitnessX[x1] = ColumnFitness(x1);
             fitnessY[y1] = RowFitness(y1);
@@ -220,7 +271,7 @@ namespace ConsoleApplication4
         /// <param name="x2"></param>
         /// <param name="y2"></param>
         /// <returns>Combines fitness of the 2 rows and 2 columns</returns>
-        private int CombinedFitness(int x1, int y1, int x2, int y2)
+        public int CombinedFitness(int x1, int y1, int x2, int y2)
         {
             //Column(s)
             int x1Fitness = ColumnFitness(x1);
