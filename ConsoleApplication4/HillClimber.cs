@@ -15,11 +15,13 @@ namespace ConsoleApplication4
         public int steps;
         public int restarts;
         public Random random;
+        public int solveTime;
+        public int solveTicks;
 
         public HillClimber(HillSudoku _state)
         {
             state = _state;
-            CalculateFitness();
+            //CalculateFitness();
             //FillConflictArray();
             steps = 0;
             restarts = 0;

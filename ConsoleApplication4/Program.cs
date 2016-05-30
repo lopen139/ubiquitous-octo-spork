@@ -7,27 +7,20 @@ namespace ConsoleApplication4
     {
         static void Main(string[] args)
         {
-            string file = "..\\..\\puzzles\\1.txt";
-            string[] read = System.IO.File.ReadAllLines(file);
-            var input = Parser.Parser_p096(read);
-            HillSudoku h = new HillSudoku(input[0], 9);
-
-            Random rand = new Random();
-
-            h.RandomizeSudoku(rand);
-            h.PrintSudoku();
-            h.RandomizeSudoku(rand);
-            h.PrintSudoku();
             //Sudoku Set 1
-           // Console.WriteLine("<>-------- Solving p096_sudoku with method 1 --------<>");
+            //Console.WriteLine("<>-------- Solving p096_sudoku with method 1 --------<>");
             //RunTest("p096_sudoku", 1);
             //Console.WriteLine("<>-------- Solving p096_sudoku with method 2 --------<>");
             //RunTest("p096_sudoku", 2);
+            //Console.WriteLine("<>-------- Solving p096_sudoku with method 3 --------<>");
+            //RunTest("p096_sudoku", 3);
             //Sudoku Set 2: hard
             //Console.WriteLine("<>-------- Solving su17ExtremeDiff500 with method 1 --------<>");
             //RunTest("su17ExtremeDiff500", 1);
             //Console.WriteLine("<>-------- Solving su17ExtremeDiff500 with method 2 --------<>");
             //RunTest("su17ExtremeDiff500", 2);
+            Console.WriteLine("<>-------- Solving su17ExtremeDiff500 with method 3 --------<>");
+            RunTest("su17ExtremeDiff500", 3);
 
             Console.ReadLine();
         }
@@ -61,8 +54,16 @@ namespace ConsoleApplication4
                              Environment.NewLine;
                     solver.sudoku.PrintSudoku();
                 }
+                if (mode == 3)
+                {
+                    HillSudoku sudoku = new HillSudoku(test1, n);
+                    HillClimber solver = new HillClimber(sudoku);
+                    solver.RandomRestartHillClimb(new Random());
+                    write += i + " " + solver.restarts + "    " + solver.solveTime + "    " + solver.solveTicks +
+                             Environment.NewLine;
+                    solver.state.PrintSudoku();
+                }
                 i++;
-                if(i == 50) break;
             }
             string loc = "..\\..\\puzzles\\out" + mode + "_" + fileName + ".txt";
             System.IO.File.WriteAllText(loc, write);
