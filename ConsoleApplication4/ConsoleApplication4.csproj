@@ -57,6 +57,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="HillClimber.cs" />
     <Compile Include="HillSudoku.cs" />
     <Compile Include="sudoku1.cs" />
     <Compile Include="sudoku2.cs" />

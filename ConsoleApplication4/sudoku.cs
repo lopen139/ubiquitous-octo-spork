@@ -24,7 +24,7 @@ namespace ConsoleApplication4
     {
         public int n;
         protected int[,] puzzle;
-        protected int sqrtN;
+        public int sqrtN;
         
         public Sudoku(int[,] _puzzle, int _n)
         {
