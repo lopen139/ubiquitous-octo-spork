@@ -69,6 +69,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="sudoku.cs" />
+    <Compile Include="TabuSearch.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

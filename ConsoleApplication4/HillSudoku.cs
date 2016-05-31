@@ -14,6 +14,57 @@ namespace ConsoleApplication4
 
         public HillSudoku(string[] input) : base(input) {}
 
+        /// <summary>
+        ///  Checks if the sudoku is correctly filled
+        /// </summary>
+        /// <returns></returns>
+        public bool CheckSudoku()
+        {
+            for (int x = 0; x < n; x++)
+            {
+
+                for (int y = 0; y < n; y++)
+                {
+                    int val = hillpuzzle[x, y];
+                    //Test horizontal
+                    for (int i = 0; i < n - 1; i++)
+                    {
+                        if (val == hillpuzzle[i, y]) return false;
+                    }
+                    //Test vertical
+                    for (int i = 0; i < n - 1; i++)
+                    {
+                        if (val == hillpuzzle[x, i]) return false;
+                    }
+                    //Test block
+                    int x_block = x - x % sqrtN;
+                    int y_block = y - y % sqrtN;
+                    for (int i = x_block; i < x_block + sqrtN; i++)
+                    {
+                        for (int j = y_block; j < y_block + sqrtN; j++)
+                        {
+                            if (val == hillpuzzle[i, j]) return false;
+                        }
+                    }
+
+                }
+            }
+            return true;
+        }
+
+        public int[,] CopyPuzzle()
+        {
+            int[,] result = new int[n, n];
+            for (int i = 0; i<n; i++)
+            {
+                for (int j = 0; j<n; j++)
+                {
+                    result[i,j] = hillpuzzle[i,j];
+                }
+            }
+            return result;
+        }
+
         public void AugmentSudoku(int x1,int y1,int x2,int y2)
         {
             int temp = hillpuzzle[x1,y1];
