@@ -27,6 +27,64 @@ namespace ConsoleApplication4
             restarts = 0;
         }
 
+        public void IteratedLocalSearch(Random _random, int k_inital, int n, bool print = false)
+        {
+            if (print) Console.WriteLine("Begin Iterated Local Search");
+            int best = 0;
+            random = _random;
+            bool solutionFound = false;
+            while (!solutionFound)
+            {
+                restarts++;
+                ResetInstant();
+                HillClimb();
+                int fit = TotalFitness();
+                if (print)
+                {
+                    if (fit > best)
+                    {
+                        best = fit;
+                        Console.WriteLine("new best fit: {0}. run: {1}", best, restarts);
+                    }
+                }
+                if (fit == 2 * state.n * state.n) solutionFound = true;
+                if (restarts == maxRestarts) break;
+            }
+            if (print && !solutionFound) Console.WriteLine("No solution found in {0} restarts.", maxRestarts);
+            if (print && solutionFound)
+            {
+                Console.WriteLine("Solution found:");
+                state.PrintSudoku();
+                Console.WriteLine("---------------");
+            }
+        }
+
+        /// <summary>
+        /// Performs random walk.
+        /// </summary>
+        /// <param name="k">number of steps</param>
+        public void RandomWalk(int k)
+        {
+            for(int i = 0; i < k; i++)
+            {
+                int x1 = random.Next(0, state.n);
+                int y1 = random.Next(0, state.n);
+                int x_block = x1 - (x1 % state.sqrtN);
+                int y_block = y1 - (y1 % state.sqrtN);
+
+                int x2 = x_block + random.Next(0, state.sqrtN);
+                int y2 = y_block + random.Next(0, state.sqrtN);
+
+                while (x1 == x2 && y1 == y2) {
+                    x2 = x_block + random.Next(0, state.sqrtN);
+                    y2 = y_block + random.Next(0, state.sqrtN);
+                }
+
+                state.AugmentSudoku(x1, x2, y1, y2);
+
+            }
+        }
+
         public void RandomRestartHillClimb(Random _random, bool print = false, int maxRestarts = int.MaxValue)
         {
             if(print) Console.WriteLine("Begin Random-restart Hill-climbing");
@@ -163,7 +221,7 @@ namespace ConsoleApplication4
         }
 
         /// <summary>
-        /// Finds local maximum
+        /// Finds local maximum. Algorithm is deterministic.
         /// </summary>
         public void HillClimb()
         {
