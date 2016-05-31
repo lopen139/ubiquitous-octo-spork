@@ -27,33 +27,44 @@ namespace ConsoleApplication4
             restarts = 0;
         }
 
-        public void IteratedLocalSearch(Random _random, int k_inital, int n, bool print = false)
+        /// <summary>
+        /// Nonadaptive Iterative local search
+        /// </summary>
+        /// <param name="_random"></param>
+        /// <param name="k">Number of Random-Walk steps</param>
+        /// <param name="print"></param>
+        public void IteratedLocalSearch(Random _random, int k, bool print = false)
         {
             if (print) Console.WriteLine("Begin Iterated Local Search");
             int best = 0;
+            int[,] bestSudoku;
             random = _random;
             bool solutionFound = false;
+            int steps = 0;
             while (!solutionFound)
             {
-                restarts++;
-                ResetInstant();
+                steps++;
                 HillClimb();
                 int fit = TotalFitness();
                 if (print)
                 {
                     if (fit > best)
                     {
-                        best = fit;
                         Console.WriteLine("new best fit: {0}. run: {1}", best, restarts);
                     }
                 }
                 if (fit == 2 * state.n * state.n) solutionFound = true;
-                if (restarts == maxRestarts) break;
+                if(fit > best)
+                {
+                    best = fit;
+                    bestSudoku = state.CopyPuzzle();
+                }
+
+                RandomWalk(k);
             }
-            if (print && !solutionFound) Console.WriteLine("No solution found in {0} restarts.", maxRestarts);
             if (print && solutionFound)
             {
-                Console.WriteLine("Solution found:");
+                Console.WriteLine("Solution found in {0} steps:", steps);
                 state.PrintSudoku();
                 Console.WriteLine("---------------");
             }
