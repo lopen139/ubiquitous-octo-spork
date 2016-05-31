@@ -19,7 +19,7 @@ namespace ConsoleApplication4
         public int solveTicks;
         public Queue<int[,]> tabuList;
         private int tabuSize;
-        private List<Tuple<Tuple<int, int>, Tuple<int, int>, int>> successors;
+        private List<Tuple<int, Tuple<int, int>, Tuple<int, int>>> successors;
 
         public TabuSearch(HillSudoku _state, int _tabuSize)
         {
@@ -46,11 +46,16 @@ namespace ConsoleApplication4
                 else
                 {
                     steps++;
-                    successors = new List<Tuple<Tuple<int, int>, Tuple<int, int>, int>>();
+                    successors = new List<Tuple<int, Tuple<int, int>, Tuple<int, int>>>();
                     if (tabuList.Count >= tabuSize) tabuList.Dequeue();
                     tabuList.Enqueue(state.CopyPuzzle());
-                    Tuple<int, int> conflict = FindConflict();
-                    SwapCell(conflict.Item1, conflict.Item2);
+                    if(!FindConflict())
+                    {
+                        successors.Sort();
+                        var s = successors[1];
+                        state.AugmentSudoku(s.Item2.Item1, s.Item2.Item2, s.Item3.Item1, s.Item3.Item2);
+                    }
+                    
                 }
             }
             stopwatch.Stop();
@@ -104,7 +109,7 @@ namespace ConsoleApplication4
                 if (!tabuList.Contains(state.hillpuzzle))
                 {
                     //add the succesor to the list of possible successors
-                    successors.Add(new Tuple<Tuple<int, int>, Tuple<int, int>, int>(new Tuple<int, int>(x1, y1), new Tuple<int, int>(x2, y2), NewcombinedFitness));
+                    successors.Add(new Tuple<int, Tuple<int, int>, Tuple<int, int>>(NewcombinedFitness, new Tuple<int, int>(x1, y1), new Tuple<int, int>(x2, y2)));
                 }
                 return false;
             }
@@ -233,7 +238,7 @@ namespace ConsoleApplication4
             return ret;
         }
 
-        public Tuple<int,int> FindConflict()
+        public bool FindConflict()
         {
             for (int x = 0; x < state.n; x++)
             {
@@ -241,11 +246,11 @@ namespace ConsoleApplication4
                 {
                     if (CheckConflicts(x, y))
                     {
-                        return new Tuple<int, int>(x, y);
+                        if (SwapCell(x, y)) return true;
                     }
                 }
             }
-            throw new Exception("No conflicts, yet not finished");
+            return false;
         }
 
     }
