@@ -66,7 +66,7 @@ namespace Tester
             var input = Parser.Parser_p096(read);
             HillSudoku testSudoku = new HillSudoku(input[0], 9);
 
-            Random rand = new Random(1);
+            Random rand = new Random();
 
             testSudoku.RandomizeSudoku(rand);
             HillClimber climber = new HillClimber(testSudoku);
@@ -77,6 +77,24 @@ namespace Tester
             Console.WriteLine("total restarts: {0}", climber.restarts);
         }
 
+        [TestMethod]
+        public void Test_ILSnonA_adaptive()
+        {
+            string file = "..\\..\\..\\ConsoleApplication4\\puzzles\\1.txt";
+            string[] read = System.IO.File.ReadAllLines(file);
+            var input = Parser.Parser_p096(read);
+            HillSudoku testSudoku = new HillSudoku(input[0], 9);
+
+            Random rand = new Random();
+
+            testSudoku.RandomizeSudoku(rand);
+            HillClimber climber = new HillClimber(testSudoku);
+
+            //Check Random Restart:
+            climber.IteratedLocalSearch(rand, 10, true, 10000);
+            Console.WriteLine("total fitness: {0}", climber.TotalFitness());
+            Console.WriteLine("total restarts: {0}", climber.restarts);
+        }
 
         [TestMethod]
         public void TestMethod1()

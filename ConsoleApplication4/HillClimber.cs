@@ -33,34 +33,44 @@ namespace ConsoleApplication4
         /// <param name="_random"></param>
         /// <param name="k">Number of Random-Walk steps</param>
         /// <param name="print"></param>
-        public void IteratedLocalSearch(Random _random, int k, bool print = false)
+        public void IteratedLocalSearch(Random _random, int k, bool print = false, int maxSteps = -1)
         {
+            CalculateFitness();
             if (print) Console.WriteLine("Begin Iterated Local Search");
             int best = 0;
-            int[,] bestSudoku;
             random = _random;
             bool solutionFound = false;
-            int steps = 0;
+            int steps = 1;
+
+            HillClimb();
+            int[,] bestSudoku = state.CopyPuzzle();
+            if (TotalFitness() == 2 * state.n * state.n) solutionFound = true;
+
             while (!solutionFound)
             {
                 steps++;
+
+                state.hillpuzzle = bestSudoku;
+                RandomWalk(k);
                 HillClimb();
+
                 int fit = TotalFitness();
+
                 if (print)
                 {
                     if (fit > best)
                     {
-                        Console.WriteLine("new best fit: {0}. run: {1}", best, restarts);
+                        Console.WriteLine("new best fit: {0}. run: {1}", fit, steps);
                     }
                 }
+
                 if (fit == 2 * state.n * state.n) solutionFound = true;
-                if(fit > best)
+                else if(fit > best)
                 {
                     best = fit;
                     bestSudoku = state.CopyPuzzle();
                 }
-
-                RandomWalk(k);
+                if (steps == maxSteps) break;
             }
             if (print && solutionFound)
             {
@@ -76,6 +86,7 @@ namespace ConsoleApplication4
         /// <param name="k">number of steps</param>
         public void RandomWalk(int k)
         {
+            //TODO: Ik verwacht een bug in RandomWal(). Zie Test_ILSnonA_Adaptive
             for(int i = 0; i < k; i++)
             {
                 int x1 = random.Next(0, state.n);
@@ -92,7 +103,6 @@ namespace ConsoleApplication4
                 }
 
                 state.AugmentSudoku(x1, x2, y1, y2);
-
             }
         }
 
