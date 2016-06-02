@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ConsoleApplication4
 {
-    class TabuSearch
+    public class TabuSearch
     {
         public HillSudoku state;
         private bool[,] conflictArray;
@@ -28,6 +28,7 @@ namespace ConsoleApplication4
             steps = 0;
             restarts = 0;
             tabuList = new Queue<int[,]>();
+            random = new Random();
             ResetInstant();
         }
 
@@ -52,7 +53,7 @@ namespace ConsoleApplication4
                     if(!FindConflict())
                     {
                         successors.Sort();
-                        var s = successors[1];
+                        var s = successors[0];
                         state.AugmentSudoku(s.Item2.Item1, s.Item2.Item2, s.Item3.Item1, s.Item3.Item2);
                     }
                     
@@ -105,12 +106,13 @@ namespace ConsoleApplication4
             else
             {
                 //Swap back:
-                state.AugmentSudoku(x1, y1, x2, y2);
+
                 if (!tabuList.Contains(state.hillpuzzle))
                 {
                     //add the succesor to the list of possible successors
                     successors.Add(new Tuple<int, Tuple<int, int>, Tuple<int, int>>(NewcombinedFitness, new Tuple<int, int>(x1, y1), new Tuple<int, int>(x2, y2)));
                 }
+                state.AugmentSudoku(x1, y1, x2, y2);
                 return false;
             }
         }
