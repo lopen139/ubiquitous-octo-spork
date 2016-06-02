@@ -109,15 +109,23 @@ namespace ConsoleApplication4
                 bool tabus = false;
                 foreach(int[,] tabu in tabuList)
                 {
-                    tabus = tabu.Equals(state.hillpuzzle);
+                    if (tabu.Equals(state.hillpuzzle))
+                    {
+                        tabus = true;
+                    }
                 }
                 /*if (!tabuList.Contains(state.hillpuzzle))
                 {
                     //add the succesor to the list of possible successors
                     successors.Add(new Tuple<int, Tuple<int, int>, Tuple<int, int>>(NewcombinedFitness, new Tuple<int, int>(x1, y1), new Tuple<int, int>(x2, y2)));
                 }*/
-                if (!tabus) successors.Add(new Tuple<int, Tuple<int, int>, Tuple<int, int>>(NewcombinedFitness, new Tuple<int, int>(x1, y1), new Tuple<int, int>(x2, y2)));
-                state.AugmentSudoku(x1, y1, x2, y2);
+                if (!tabus)
+                {
+                    successors.Add(new Tuple<int, Tuple<int, int>, Tuple<int, int>>(NewcombinedFitness, new Tuple<int, int>(x1, y1), new Tuple<int, int>(x2, y2)));
+                }
+                else { int huh = 0; }
+
+                    state.AugmentSudoku(x1, y1, x2, y2);
                 return false;
             }
         }
