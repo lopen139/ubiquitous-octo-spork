@@ -97,6 +97,37 @@ namespace Tester
         }
 
         [TestMethod]
+        public void RefTest()
+        {
+            int[,] a1 = new int[9, 9];
+            int[,] a2 = new int[9, 9];
+            Random radn = new Random(1);
+
+            for(int i = 0; i < 9; i++)
+            {
+                for (int j = 0; j < 9; j++)
+                {
+                    int r = radn.Next();
+                    a1[i, j] = r;
+                    a2[i, j] = r;
+                }
+            }
+
+            for (int i = 0; i < 9; i++)
+            {
+                for (int j = 0; j < 9; j++)
+                {
+                    Assert.AreEqual(a1[i, j], a2[i, j]); ;
+                }
+            }
+
+            Assert.IsTrue(a2.Equals(a2));
+            Assert.IsTrue(a1.Equals(a1));
+            Assert.IsTrue(!a1.Equals(a2));
+            
+        }
+
+        [TestMethod]
         public void TestTabu()
         {
             string file = "..\\..\\..\\ConsoleApplication4\\puzzles\\1.txt";
