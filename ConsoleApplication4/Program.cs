@@ -19,8 +19,10 @@ namespace ConsoleApplication4
             //RunTest("su17ExtremeDiff500", 1);
             //Console.WriteLine("<>-------- Solving su17ExtremeDiff500 with method 2 --------<>");
             //RunTest("su17ExtremeDiff500", 2);
-            Console.WriteLine("<>-------- Solving su17ExtremeDiff500 with method 3 --------<>");
-            RunTest("su17ExtremeDiff500", 3);
+            //Console.WriteLine("<>-------- Solving su17ExtremeDiff500 with method 3 --------<>");
+            //RunTest("su17ExtremeDiff500", 3);
+            Console.WriteLine("<>-------- Solving su17ExtremeDiff500 with method 4 --------<>");
+            RunTest("su17ExtremeDiff500", 4);
 
             Console.ReadLine();
         }
@@ -59,6 +61,15 @@ namespace ConsoleApplication4
                     HillSudoku sudoku = new HillSudoku(test1, n);
                     HillClimber solver = new HillClimber(sudoku);
                     solver.RandomRestartHillClimb(new Random());
+                    write += i + " " + solver.restarts + "    " + solver.solveTime + "    " + solver.solveTicks +
+                             Environment.NewLine;
+                    solver.state.PrintSudoku();
+                }
+                if (mode == 4)
+                {
+                    HillSudoku sudoku = new HillSudoku(test1, n);
+                    HillClimber solver = new HillClimber(sudoku);
+                    solver.IteratedLocalSearch(new Random(), 20);
                     write += i + " " + solver.restarts + "    " + solver.solveTime + "    " + solver.solveTicks +
                              Environment.NewLine;
                     solver.state.PrintSudoku();

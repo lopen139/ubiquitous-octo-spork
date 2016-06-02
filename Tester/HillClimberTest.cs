@@ -91,7 +91,7 @@ namespace Tester
             HillClimber climber = new HillClimber(testSudoku);
 
             //Check Random Restart:
-            climber.IteratedLocalSearch(rand, 10, true, 10000);
+            climber.IteratedLocalSearch(rand, 10, true);
             Console.WriteLine("total fitness: {0}", climber.TotalFitness());
             Console.WriteLine("total restarts: {0}", climber.restarts);
         }
