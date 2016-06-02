@@ -106,6 +106,7 @@ namespace Tester
             HillSudoku problem = new HillSudoku(input[0], 9);
             TabuSearch solver = new TabuSearch(problem, tabuSize);
 
+            
             Console.WriteLine("Testing TabuSearch");
             solver.Search();
             problem.PrintSudoku();

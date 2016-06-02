@@ -39,6 +39,7 @@ namespace ConsoleApplication4
             bool solved = false;
             while(!solved)
             {
+
                 if (state.CheckSudoku())
                 {
                     solved = true;
@@ -105,11 +106,17 @@ namespace ConsoleApplication4
             else
             {
                 //Swap back:
-                if (!tabuList.Contains(state.hillpuzzle))
+                bool tabus = false;
+                foreach(int[,] tabu in tabuList)
+                {
+                    tabus = tabu.Equals(state.hillpuzzle);
+                }
+                /*if (!tabuList.Contains(state.hillpuzzle))
                 {
                     //add the succesor to the list of possible successors
                     successors.Add(new Tuple<int, Tuple<int, int>, Tuple<int, int>>(NewcombinedFitness, new Tuple<int, int>(x1, y1), new Tuple<int, int>(x2, y2)));
-                }
+                }*/
+                if (!tabus) successors.Add(new Tuple<int, Tuple<int, int>, Tuple<int, int>>(NewcombinedFitness, new Tuple<int, int>(x1, y1), new Tuple<int, int>(x2, y2)));
                 state.AugmentSudoku(x1, y1, x2, y2);
                 return false;
             }
