@@ -3,13 +3,27 @@ using System.Linq;
 
 namespace ConsoleApplication4
 {
+
+    public struct Cell
+    {
+        int x;
+        int y;
+    }
+
+    public struct SwapOperation
+    {
+        Cell cell1;
+        Cell cell2;
+        int newFitnessValue;
+    }
+
     /// <summary>
     /// Finds local minimum for a given faulty-sudoku instance 
     /// </summary>
     public class HillClimber
     {
         public HillSudoku state;
-        private bool[,] conflictArray;
+        public bool[,] conflictArray;
         private int[] fitnessX;
         private int[] fitnessY;
         public int steps;
@@ -21,8 +35,6 @@ namespace ConsoleApplication4
         public HillClimber(HillSudoku _state)
         {
             state = _state;
-            //CalculateFitness();
-            //FillConflictArray();
             steps = 0;
             restarts = 0;
         }

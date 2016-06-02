@@ -39,7 +39,6 @@ namespace ConsoleApplication4
             bool solved = false;
             while(!solved)
             {
-
                 if (state.CheckSudoku())
                 {
                     solved = true;
@@ -106,7 +105,6 @@ namespace ConsoleApplication4
             else
             {
                 //Swap back:
-
                 if (!tabuList.Contains(state.hillpuzzle))
                 {
                     //add the succesor to the list of possible successors
