@@ -35,10 +35,11 @@ namespace ConsoleApplication4
         /// <param name="print"></param>
         public void IteratedLocalSearch(Random _random, int k, bool print = false, int maxSteps = -1)
         {
+            random = _random;
+            state.RandomizeSudoku(random);
             CalculateFitness();
             if (print) Console.WriteLine("Begin Iterated Local Search");
             int best = 0;
-            random = _random;
             bool solutionFound = false;
             int steps = 1;
 
@@ -51,8 +52,14 @@ namespace ConsoleApplication4
                 steps++;
 
                 state.hillpuzzle = bestSudoku;
-                RandomWalk(k);
+                RandomWalk(k, print);
                 HillClimb();
+                if (print)
+                {
+                    Console.WriteLine("Hill Climb:");
+                    state.PrintSudoku();
+                    Console.WriteLine("-----------");
+                }
 
                 int fit = TotalFitness();
 
@@ -84,13 +91,13 @@ namespace ConsoleApplication4
         /// Performs random walk.
         /// </summary>
         /// <param name="k">number of steps</param>
-        public void RandomWalk(int k)
+        public void RandomWalk(int k, bool print = false)
         {
-            //TODO: Ik verwacht een bug in RandomWal(). Zie Test_ILSnonA_Adaptive
             for(int i = 0; i < k; i++)
             {
                 int x1 = random.Next(0, state.n);
                 int y1 = random.Next(0, state.n);
+
                 int x_block = x1 - (x1 % state.sqrtN);
                 int y_block = y1 - (y1 % state.sqrtN);
 
@@ -102,7 +109,13 @@ namespace ConsoleApplication4
                     y2 = y_block + random.Next(0, state.sqrtN);
                 }
 
-                state.AugmentSudoku(x1, x2, y1, y2);
+                state.AugmentSudoku(x1, y1, x2, y2);
+            }
+            if (print)
+            {
+                Console.WriteLine("Random walk:");
+                state.PrintSudoku();
+                Console.WriteLine("------------");
             }
         }
 
