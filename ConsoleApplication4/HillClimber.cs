@@ -1,22 +1,9 @@
 ﻿using System;
 using System.Linq;
+using System.Xml;
 
 namespace ConsoleApplication4
 {
-
-    public struct Cell
-    {
-        int x;
-        int y;
-    }
-
-    public struct SwapOperation
-    {
-        Cell cell1;
-        Cell cell2;
-        int newFitnessValue;
-    }
-
     /// <summary>
     /// Finds local minimum for a given faulty-sudoku instance 
     /// </summary>
@@ -24,13 +11,11 @@ namespace ConsoleApplication4
     {
         public HillSudoku state;
         public bool[,] conflictArray;
-        private int[] fitnessX;
-        private int[] fitnessY;
-        public int steps;
+        public long steps;
         public int restarts;
         public Random random;
-        public int solveTime;
-        public int solveTicks;
+        public long solveTime;
+        public long solveTicks;
 
         public HillClimber(HillSudoku _state)
         {
@@ -49,7 +34,7 @@ namespace ConsoleApplication4
         {
             random = _random;
             state.RandomizeSudoku(random);
-            CalculateFitness();
+            state.CalculateFitness();
             if (print) Console.WriteLine("Begin Iterated Local Search");
             int best = 0;
             bool solutionFound = false;
@@ -57,7 +42,7 @@ namespace ConsoleApplication4
 
             HillClimb();
             int[,] bestSudoku = state.CopyPuzzle();
-            if (TotalFitness() == 2 * state.n * state.n) solutionFound = true;
+            if (state.TotalFitness() == 2 * state.n * state.n) solutionFound = true;
 
             while (!solutionFound)
             {
@@ -69,11 +54,11 @@ namespace ConsoleApplication4
                 if (print)
                 {
                     Console.WriteLine("Hill Climb:");
-                    state.PrintSudoku();
+                    state.PrintState();
                     Console.WriteLine("-----------");
                 }
 
-                int fit = TotalFitness();
+                int fit = state.TotalFitness();
 
                 if (print)
                 {
@@ -94,7 +79,7 @@ namespace ConsoleApplication4
             if (print && solutionFound)
             {
                 Console.WriteLine("Solution found in {0} steps:", steps);
-                state.PrintSudoku();
+                state.PrintState();
                 Console.WriteLine("---------------");
             }
         }
@@ -107,26 +92,26 @@ namespace ConsoleApplication4
         {
             for(int i = 0; i < k; i++)
             {
-                int x1 = random.Next(0, state.n);
-                int y1 = random.Next(0, state.n);
+                Cell cell1 = new Cell(random.Next(0, state.n), random.Next(0, state.n));
 
-                int x_block = x1 - (x1 % state.sqrtN);
-                int y_block = y1 - (y1 % state.sqrtN);
+                int x_block = cell1.x - (cell1.x % state.sqrtN);
+                int y_block = cell1.y - (cell1.y % state.sqrtN);
 
-                int x2 = x_block + random.Next(0, state.sqrtN);
-                int y2 = y_block + random.Next(0, state.sqrtN);
+                Cell cell2 = new Cell(x_block + random.Next(0, state.sqrtN), y_block + random.Next(0, state.sqrtN));
 
-                while (x1 == x2 && y1 == y2) {
-                    x2 = x_block + random.Next(0, state.sqrtN);
-                    y2 = y_block + random.Next(0, state.sqrtN);
+                SwapOperation swap = new SwapOperation(cell1, cell2);
+
+                while (cell1.x == cell2.x && cell1.y == cell2.y) {
+                    cell2.x = x_block + random.Next(0, state.sqrtN);
+                    cell2.y = y_block + random.Next(0, state.sqrtN);
                 }
 
-                state.AugmentSudoku(x1, y1, x2, y2);
+                state.AugmentSudoku(swap);
             }
             if (print)
             {
                 Console.WriteLine("Random walk:");
-                state.PrintSudoku();
+                state.PrintState();
                 Console.WriteLine("------------");
             }
         }
@@ -140,9 +125,9 @@ namespace ConsoleApplication4
             while (!solutionFound)
             {
                 restarts++;
-                ResetInstant();
+                state.ResetInstant(random);
                 HillClimb();
-                int fit = TotalFitness();
+                int fit = state.TotalFitness();
                 if (print)
                 {
                     if (fit > best)
@@ -158,82 +143,9 @@ namespace ConsoleApplication4
             if (print && solutionFound)
             {
                 Console.WriteLine("Solution found:");
-                state.PrintSudoku();
+                state.PrintState();
                 Console.WriteLine("---------------");
             }
-        }
-
-        public int TotalFitness()
-        {
-            return fitnessX.Sum() + fitnessY.Sum();
-        }
-
-        /// <summary>
-        /// Resets the sudoku to new random instant
-        /// </summary>
-        public void ResetInstant()
-        {
-            state.RandomizeSudoku(random);
-            CalculateFitness();
-            steps = 0;
-        }
-
-        /// <summary>
-        /// Fills the fitness arrays (from scratch)
-        /// </summary>
-        public void CalculateFitness()
-        {
-            fitnessX = new int[state.n];
-            fitnessY = new int[state.n];
-            for(int i = 0; i < state.n; i++)
-            {
-                fitnessX[i] = ColumnFitness(i);
-                fitnessY[i] = RowFitness(i);
-            }
-        }
-
-        /// <summary>
-        /// Calculates the fitness for a given row.
-        /// Every number present increases the fitness with 1.
-        /// </summary>
-        /// <param name="y">RowNumber</param>
-        /// <returns>Fitness</returns>
-        public int RowFitness(int y)
-        {
-            bool[] present = new bool[state.n + 1];
-            for(int i = 0; i < state.n; i++)
-            {
-                int num = state.hillpuzzle[i,y];
-                present[num] = true;
-            }
-            int ret = 0;
-            for (int i = 1; i < state.n + 1; i++)
-            {
-                if (present[i]) ret++;
-            }
-            return ret;
-        }
-
-        /// <summary>
-        /// Calculates the fitness for a given column.
-        /// Every number present increases the fitness with 1.
-        /// </summary>
-        /// <param name="x">ColumnNumber</param>
-        /// <returns>Fitness</returns>
-        public int ColumnFitness(int x)
-        {
-            bool[] present = new bool[state.n + 1];
-            for (int i = 0; i < state.n; i++)
-            {
-                int num = state.hillpuzzle[x,i];
-                present[num] = true;
-            }
-            int ret = 0;
-            for (int i = 1; i < state.n + 1; i++)
-            {
-                if (present[i]) ret++;
-            }
-            return ret;
         }
 
         /// <summary>
@@ -245,25 +157,10 @@ namespace ConsoleApplication4
             {
                 for (int y = 0; y < state.n; y++)
                 {
-                    conflictArray[x, y] = CheckConflicts(x, y);
+                    Cell cell = new Cell(x,y);
+                    conflictArray[x, y] = state.CheckConflicts(cell);
                 }
             }
-        }
-
-        /// <summary>
-        /// Checks if a given cell is in conflict with any other cell.
-        /// </summary>
-        /// <param name="x">RowNumber</param>
-        /// <param name="y">ColumnNmber</param>
-        /// <returns>true: conflict, false: no conflict</returns>
-        public bool CheckConflicts(int x, int y)
-        {
-            for (int i = 0; i < state.n; i++)
-            {
-                if (state.hillpuzzle[x, y] == state.hillpuzzle[i, y] && x != i) return true;
-                if (state.hillpuzzle[x, y] == state.hillpuzzle[x, i] && y != i) return true;
-            }
-            return false;
         }
 
         /// <summary>
@@ -289,9 +186,10 @@ namespace ConsoleApplication4
             {
                 for (int y = 0; y < state.n; y++)
                 {
-                    if (CheckConflicts(x,y))
+                    Cell cell = new Cell(x,y);
+                    if (state.CheckConflicts(cell))
                     {
-                       if(SwapCell(x, y)) return true;
+                       if(SwapCell(cell)) return true;
                     }
                 }
             }
@@ -305,15 +203,17 @@ namespace ConsoleApplication4
         /// <param name="x">RowNumber</param>
         /// <param name="y">ColumnNumber</param>
         /// <returns>true: swap was made, false: no improving swaps</returns>
-        public bool SwapCell(int x, int y)
+        public bool SwapCell(Cell cell)
         {
-            int x_block = x - (x % state.sqrtN);
-            int y_block = y - (y % state.sqrtN);
+            int x_block = cell.x - (cell.x % state.sqrtN);
+            int y_block = cell.y - (cell.y % state.sqrtN);
             for (int i = x_block; i < x_block + state.sqrtN; i++)
             {
                 for (int j = y_block; j < y_block + state.sqrtN; j++)
                 {
-                    if (CheckConflicts(i, j) && FitnessImproved(x, y, i, j)) return true;
+                    Cell cell2 = new Cell(i,j);
+                    SwapOperation swap = new SwapOperation(cell, cell2);
+                    if (state.CheckConflicts(cell2) && FitnessImproved(swap)) return true;
                 }
             }
             return false;
@@ -329,67 +229,28 @@ namespace ConsoleApplication4
         /// <param name="x2"></param>
         /// <param name="y2"></param>
         /// <returns>true: swap increases fitness, false: swap does not increase fitness</returns>
-        public bool FitnessImproved(int x1, int y1, int x2, int y2)
+        public bool FitnessImproved(SwapOperation swap)
         {
             //Calculate current fitness
-            int combinedFitness = CombinedFitness(x1, y1, x2, y2);
+            int combinedFitness = state.CombinedFitness(swap);
             
             //Temporarily swap:
-            state.AugmentSudoku(x1, y1, x2, y2);
+            state.AugmentSudoku(swap);
 
             //Calculate new fitness
-            int NewcombinedFitness = CombinedFitness(x1, y1, x2, y2);
+            int NewcombinedFitness = state.CombinedFitness(swap);
 
             if (NewcombinedFitness > combinedFitness)
             {
-                UpdateFitness(x1, y1, x2, y2);
+                state.UpdateFitness(swap);
                 return true;
             }
             else
             {
                 //Swap back:
-                state.AugmentSudoku(x1, y1, x2, y2);
+                state.AugmentSudoku(swap);
                 return false;
             }
-        }
-
-        /// <summary>
-        /// Updates the fitness arrays
-        /// </summary>
-        /// <param name="x1"></param>
-        /// <param name="y1"></param>
-        /// <param name="x2"></param>
-        /// <param name="y2"></param>
-        public void UpdateFitness(int x1, int y1, int x2, int y2)
-        {
-            fitnessX[x1] = ColumnFitness(x1);
-            fitnessY[y1] = RowFitness(y1);
-            if (x1 != x2) fitnessX[x2] = ColumnFitness(x2);
-            if (y1 != y2) fitnessY[y2] = RowFitness(y2);
-
-        }
-
-        /// <summary>
-        /// Calculates the combined fitness of the columns and rows that are swapped
-        /// </summary>
-        /// <param name="x1"></param>
-        /// <param name="y1"></param>
-        /// <param name="x2"></param>
-        /// <param name="y2"></param>
-        /// <returns>Combines fitness of the 2 rows and 2 columns</returns>
-        public int CombinedFitness(int x1, int y1, int x2, int y2)
-        {
-            //Column(s)
-            int x1Fitness = ColumnFitness(x1);
-            int x2Fitness = 0;
-            if (x1 != x2) x2Fitness = ColumnFitness(x2);
-
-            //Row(s)
-            int y1Fitness = RowFitness(y1);
-            int y2Fitness = 0;
-            if (y1 != y2) y2Fitness = RowFitness(y2);
-
-            return x1Fitness + x2Fitness + y1Fitness + y2Fitness;
         }
     }
 }

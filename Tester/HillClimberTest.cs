@@ -21,15 +21,15 @@ namespace Tester
             HillClimber climber = new HillClimber(testSudoku);
 
             //CheckConflicts:
-            Assert.IsTrue(climber.CheckConflicts(0, 0));
-            Assert.IsTrue(climber.CheckConflicts(0, 1));
-            Assert.IsFalse(climber.CheckConflicts(0, 2));
-            Assert.IsTrue(climber.CheckConflicts(0, 3));
-            Assert.IsTrue(climber.CheckConflicts(0, 4));
-            Assert.IsTrue(climber.CheckConflicts(0, 5));
-            Assert.IsFalse(climber.CheckConflicts(0, 6));
-            Assert.IsTrue(climber.CheckConflicts(0, 7));
-            Assert.IsTrue(climber.CheckConflicts(0, 8));
+            Assert.IsTrue(climber.state.CheckConflicts(new Cell(0,0)));
+            Assert.IsTrue(climber.state.CheckConflicts(new Cell(0, 1)));
+            Assert.IsFalse(climber.state.CheckConflicts(new Cell(0, 2)));
+            Assert.IsTrue(climber.state.CheckConflicts(new Cell(0, 3)));
+            Assert.IsTrue(climber.state.CheckConflicts(new Cell(0, 4)));
+            Assert.IsTrue(climber.state.CheckConflicts(new Cell(0, 5)));
+            Assert.IsFalse(climber.state.CheckConflicts(new Cell(0, 6)));
+            Assert.IsTrue(climber.state.CheckConflicts(new Cell(0, 7)));
+            Assert.IsTrue(climber.state.CheckConflicts(new Cell(0, 8)));
         }
 
         [TestMethod]
@@ -49,10 +49,10 @@ namespace Tester
             for (int i = 0; i < 1000; i++)
             {
                 climber.random = rand;
-                climber.ResetInstant();
-                int old = climber.TotalFitness();
+                climber.state.ResetInstant(rand);
+                int old = climber.state.TotalFitness();
                 climber.HillClimb();
-                int climbed = climber.TotalFitness();
+                int climbed = climber.state.TotalFitness();
                 Assert.IsTrue(old <= climbed);
                 //Console.WriteLine("old: {0}, new: {1}", old, climbed);
             }
@@ -73,7 +73,7 @@ namespace Tester
 
             //Check Random Restart:
             climber.RandomRestartHillClimb(rand, true, 10000);
-            Console.WriteLine("total fitness: {0}", climber.TotalFitness());
+            Console.WriteLine("total fitness: {0}", climber.state.TotalFitness());
             Console.WriteLine("total restarts: {0}", climber.restarts);
         }
 
@@ -92,7 +92,7 @@ namespace Tester
 
             //Check Random Restart:
             climber.IteratedLocalSearch(rand, 10, true);
-            Console.WriteLine("total fitness: {0}", climber.TotalFitness());
+            Console.WriteLine("total fitness: {0}", climber.state.TotalFitness());
             Console.WriteLine("total restarts: {0}", climber.restarts);
         }
 
@@ -140,7 +140,7 @@ namespace Tester
             
             Console.WriteLine("Testing TabuSearch");
             solver.Search();
-            problem.PrintSudoku();
+            problem.PrintState();
             Console.WriteLine("Ticks: " + solver.solveTicks);
             Console.WriteLine("Steps: " + solver.steps);
         }
@@ -160,21 +160,21 @@ namespace Tester
 
             //Basic case:
             Console.WriteLine("RANDOM:");
-            climber.state.PrintSudoku();
-            Console.WriteLine("total fitness: {0}", climber.TotalFitness());
+            climber.state.PrintState();
+            Console.WriteLine("total fitness: {0}", climber.state.TotalFitness());
 
             climber.HillClimb();
 
             Console.WriteLine("CLIMBED:");
-            climber.state.PrintSudoku();
-            Console.WriteLine("total fitness: {0}", climber.TotalFitness());
+            climber.state.PrintState();
+            Console.WriteLine("total fitness: {0}", climber.state.TotalFitness());
 
             Console.WriteLine();
 
             //Check Random Restart:
             climber.RandomRestartHillClimb(rand);
-            climber.state.PrintSudoku();
-            Console.WriteLine("total fitness: {0}", climber.TotalFitness());
+            climber.state.PrintState();
+            Console.WriteLine("total fitness: {0}", climber.state.TotalFitness());
             Console.WriteLine("total restarts: {0}", climber.restarts);
         }
     }

@@ -63,7 +63,7 @@ namespace ConsoleApplication4
                     solver.RandomRestartHillClimb(new Random());
                     write += i + " " + solver.restarts + "    " + solver.solveTime + "    " + solver.solveTicks +
                              Environment.NewLine;
-                    solver.state.PrintSudoku();
+                    solver.state.PrintState();
                 }
                 if (mode == 4)
                 {
@@ -72,7 +72,7 @@ namespace ConsoleApplication4
                     solver.IteratedLocalSearch(new Random(), 20);
                     write += i + " " + solver.restarts + "    " + solver.solveTime + "    " + solver.solveTicks +
                              Environment.NewLine;
-                    solver.state.PrintSudoku();
+                    solver.state.PrintState();
                 }
                 i++;
             }
