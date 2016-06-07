@@ -18,7 +18,7 @@ namespace ConsoleApplication4
         }
     }
 
-    public struct SwapOperation
+    public struct SwapOperation : IComparable<SwapOperation>
     {
         public Cell cell1;
         public Cell cell2;
@@ -28,6 +28,13 @@ namespace ConsoleApplication4
         {
             cell1 = _cell1;
             cell2 = _cell2;
+        }
+
+        public int CompareTo(SwapOperation that)
+        {
+            if (this.newFitnessValue > that.newFitnessValue) return -1;
+            if (this.newFitnessValue == that.newFitnessValue) return 0;
+            return 1;
         }
     }
 
