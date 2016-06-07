@@ -96,10 +96,18 @@ namespace ConsoleApplication4
             //Temporarily swap:
             state.AugmentSudoku(swap);
 
+            bool tabus = false;
+            foreach (int[,] tabu in tabuList)
+            {
+                if (tabu.OfType<int>().SequenceEqual(state.hillpuzzle.OfType<int>()))
+                {
+                    tabus = true;
+                }
+            }
             //Calculate new fitness
             int NewcombinedFitness = state.CombinedFitness(swap);
 
-            if (NewcombinedFitness > combinedFitness && !tabuList.Contains(state.hillpuzzle))
+            if (NewcombinedFitness > combinedFitness && !tabus)
             {
                 state.UpdateFitness(swap);
                 return true;
@@ -107,14 +115,7 @@ namespace ConsoleApplication4
             else
             {
                 //Swap back:
-                bool tabus = false;
-                foreach(int[,] tabu in tabuList)
-                {
-                    if (tabu.Equals(state.hillpuzzle))
-                    {
-                        tabus = true;
-                    }
-                }
+
                 /*if (!tabuList.Contains(state.hillpuzzle))
                 {
                     //add the succesor to the list of possible successors

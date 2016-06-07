@@ -133,7 +133,7 @@ namespace Tester
             string file = "..\\..\\..\\ConsoleApplication4\\puzzles\\1.txt";
             string[] read = System.IO.File.ReadAllLines(file);
             var input = Parser.Parser_p096(read);
-            int tabuSize = 500;
+            int tabuSize = 50;
             HillSudoku problem = new HillSudoku(input[0], 9);
             TabuSearch solver = new TabuSearch(problem, tabuSize);
 
