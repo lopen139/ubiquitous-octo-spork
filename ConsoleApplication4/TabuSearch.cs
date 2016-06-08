@@ -6,6 +6,65 @@ using System.Threading.Tasks;
 
 namespace ConsoleApplication4
 {
+    public class TabuList
+    {
+        Stack<SwapOperation> stackA;
+        Stack<SwapOperation> stackB;
+        int listLength;
+
+        public TabuList(int _listLength)
+        {
+            listLength = _listLength;
+            stackA = new Stack<SwapOperation>();
+            stackB = new Stack<SwapOperation>();
+        }
+
+        public void addSwap(SwapOperation swap)
+        {
+            stackA.Push(swap);
+        }
+
+        public bool ChecSwapOnkSudoku(HillSudoku sudoku, SwapOperation swap)
+        {
+            //Copy new state and swap back:
+            sudoku.AugmentSudoku(swap);
+            int[,] newState = sudoku.CopyPuzzle();
+            sudoku.AugmentSudoku(swap);
+
+            //Check with sudoku's on the stack:
+            int k = 0;
+            SwapOperation nextSwap;
+            bool result = true;
+            while (k < listLength && stackA.Count > 0)
+            {
+                nextSwap = stackA.Pop();
+                stackB.Push(nextSwap);
+                sudoku.AugmentSudoku(nextSwap);
+                result = sudoku.CompareSudokus(newState);
+                if (!result) break;
+                k++;
+            }
+            //Discard swaps beyond the TabuList length:
+            if (!result)
+            {
+                while (stackA.Count != 0)
+                {
+                    stackA.Pop();
+                }
+            }
+            //Push everything back on stackA and change state back:
+            while(stackB.Count > 0)
+            {
+                nextSwap = stackB.Pop();
+                sudoku.AugmentSudoku(nextSwap);
+                stackA.Push(nextSwap);
+            }
+            return result;
+        }
+
+    }
+
+
     public class TabuSearch
     {
         public HillSudoku state;

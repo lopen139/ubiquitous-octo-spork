@@ -76,6 +76,19 @@ namespace ConsoleApplication4
             }
         }
 
+
+        public bool CompareSudokus(int[,] state)
+        {
+            for (int x = 0; x < n; x++)
+            {
+                for (int y = 0; y < n; y++)
+                {
+                    if (state[x, y] != hillpuzzle[x, y]) return false;
+                }
+            }
+            return true;
+        }
+
         /// <summary>
         /// Checks if a given cell is in conflict with any other cell.
         /// </summary>
