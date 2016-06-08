@@ -130,19 +130,28 @@ namespace Tester
         [TestMethod]
         public void TestTabu()
         {
-            string file = "..\\..\\..\\ConsoleApplication4\\puzzles\\1.txt";
+            string file = "..\\..\\..\\ConsoleApplication4\\puzzles\\p096_sudoku.txt";
             string[] read = System.IO.File.ReadAllLines(file);
             var input = Parser.Parser_p096(read);
             int tabuSize = 5;
-            HillSudoku problem = new HillSudoku(input[0], 9);
-            TabuSearch solver = new TabuSearch(problem, tabuSize);
-
-            
-            Console.WriteLine("Testing TabuSearch");
-            solver.Search();
-            problem.PrintState();
-            Console.WriteLine("Ticks: " + solver.solveTicks);
-            Console.WriteLine("Steps: " + solver.steps);
+            foreach (var x in input)
+            {
+                HillSudoku problem = new HillSudoku(input[0], 9);
+                TabuSearch solver = new TabuSearch(problem, tabuSize);
+                Console.WriteLine("Testing TabuSearch");
+                solver.Search();
+                problem.PrintState();
+                Console.WriteLine("Ticks: " + solver.solveTicks);
+                Console.WriteLine("Steps: " + solver.steps);
+                if(problem.CheckSudoku())
+                {
+                    Console.WriteLine("CORRECTLY SOLVED");
+                }
+                else
+                {
+                    Console.WriteLine("Incorrect");
+                }
+            }
         }
 
         [TestMethod]
