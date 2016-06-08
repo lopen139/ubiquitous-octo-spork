@@ -77,6 +77,7 @@ namespace ConsoleApplication4
         public int solveTime;
         public int solveTicks;
         public Queue<int[,]> tabuList;
+        private HillSudoku bestSolution;
         private int tabuSize;
         private List<SwapOperation> successors;
 
@@ -89,6 +90,9 @@ namespace ConsoleApplication4
             tabuList = new Queue<int[,]>();
             random = new Random();
             state.ResetInstant(random);
+            bestSolution = new HillSudoku(state.CopyPuzzle(), state.n);
+            bestSolution.hillpuzzle = state.CopyPuzzle();
+            bestSolution.CalculateFitness();
         }
 
         public void Search()
@@ -99,21 +103,35 @@ namespace ConsoleApplication4
             while(!solved)
             {
 
-                if (state.CheckSudoku())
+                if (state.CheckSudoku() || steps > 2000 )
                 {
                     solved = true;
+                    state = bestSolution;
                 }
                 else
                 {
                     steps++;
                     successors = new List<SwapOperation>();
                     if (tabuList.Count >= tabuSize) tabuList.Dequeue();
+                    if (state.TotalFitness() > bestSolution.TotalFitness())
+                    {
+                        bestSolution.hillpuzzle = state.hillpuzzle;
+                        bestSolution.CalculateFitness();
+                    }
                     tabuList.Enqueue(state.CopyPuzzle());
                     if(!FindConflict())
                     {
-                        successors.Sort();
-                        SwapOperation s = successors[0];
-                        state.AugmentSudoku(s);
+                        if (successors.Count == 0)
+                        { 
+                            solved = true;
+                            state = bestSolution;
+                        }
+                        else
+                        {
+                            successors.Sort();
+                            SwapOperation s = successors[0];
+                            state.AugmentSudoku(s);
+                        }
                     }
                     
                 }
