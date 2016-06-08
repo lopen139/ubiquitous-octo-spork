@@ -15,8 +15,8 @@ namespace ConsoleApplication4
             //RunTest("p096_sudoku", 2);
             //Console.WriteLine("<>-------- Solving p096_sudoku with method 3 --------<>");
             //RunTest("p096_sudoku", 3);
-            Console.WriteLine("<>-------- Solving p096_sudoku with method 4 --------<>");
-            RunTest("p096_sudoku", 4);
+            //Console.WriteLine("<>-------- Solving p096_sudoku with method 4 --------<>");
+            //RunTest("p096_sudoku", 4);
             //Sudoku Set 2: hard
             //Console.WriteLine("<>-------- Solving su17ExtremeDiff500 with method 1 --------<>");
             //RunTest("su17ExtremeDiff500", 1);
@@ -27,7 +27,7 @@ namespace ConsoleApplication4
             //Console.WriteLine("<>-------- Solving su17ExtremeDiff500 with method 4 --------<>");
             //RunTest("su17ExtremeDiff500", 4);
 
-            //Analyzer();
+            Analyzer();
 
             Console.ReadLine();
         }
@@ -113,9 +113,9 @@ namespace ConsoleApplication4
             int i = 0;
             int n = 9;
             string str =
-                "#sudoku #average restarts   #sd restarts    #average solve ticks    #sd solve ticks #average average steps    #sd average steps #average sd steps  #average average ticks    #sd average ms #average sd ticks #average average ms    #sd average steps #average sd ms";
+                "i averageRestarts sdRestarts averageSolveTicks sdSolveTicks averageAverageSteps sdAverageSteps averageAverageTicks sdAverageTicks averageAverageMilliseconds sdAverageMilliseconds";
             Console.WriteLine(str);
-            int solves = 1;
+            int solves = 100;
             Console.WriteLine("solves: " + solves);
             string write = str + Environment.NewLine;
             write += solves + Environment.NewLine;
@@ -132,9 +132,9 @@ namespace ConsoleApplication4
                     List<double> averageSteps = new List<double>();
                     List<double> averageTicks= new List<double>();
                     List<double> averageMilliseconds = new List<double>();
-                    List<double> sdSteps = new List<double>();
-                    List<double> sdTicks = new List<double>();
-                    List<double> sdMilliseconds = new List<double>();
+                    //List<double> sdSteps = new List<double>();
+                    //List<double> sdTicks = new List<double>();
+                    //<double> sdMilliseconds = new List<double>();
 
                     //Multiple solves for each sudoku for more statistics
                     for (int j = 0; j < solves; j++)
@@ -146,11 +146,11 @@ namespace ConsoleApplication4
                         solveTicks.Add(solver.solveTicks);
                         solveTMilliseconds.Add(solver.solveTime);
                         averageSteps.Add(solver.averageSteps);
-                        sdSteps.Add(solver.sdSteps);
+                        //sdSteps.Add(solver.sdSteps);
                         averageTicks.Add(solver.averageTicks);
                         averageMilliseconds.Add(solver.averageMilliseconds);
-                        sdTicks.Add(solver.sdTicks);
-                        sdMilliseconds.Add(solver.sdMilliseconds);
+                        //sdTicks.Add(solver.sdTicks);
+                        //sdMilliseconds.Add(solver.sdMilliseconds);
 
                         //Reset analysis parameters in the solver
                         solver.ResetAnalysisParameters();
@@ -165,20 +165,20 @@ namespace ConsoleApplication4
                     //average steps:
                     double averageAverageSteps = averageSteps.Average();
                     double sdAverageSteps = StandardDeviation(averageSteps);
-                    double averageSDSteps = sdSteps.Average();
+                    //double averageSDSteps = sdSteps.Average();
                     //average ticks:
                     double averageAverageTicks = averageTicks.Average();
                     double sdAverageTicks = StandardDeviation(averageTicks);
-                    double averageSDTicks = sdTicks.Average();
-                    //average steps:
+                    //double averageSDTicks = sdTicks.Average();
+                    //average ms:
                     double averageAverageMilliseconds = averageMilliseconds.Average();
                     double sdAverageMilliseconds = StandardDeviation(averageMilliseconds);
-                    double averageSDMilliseconds = sdMilliseconds.Average();
+                    //double averageSDMilliseconds = sdMilliseconds.Average();
 
                     //Write Line to file
                     string line = i + " " + averageRestarts + "    " + sdRestarts + "    " + averageSolveTicks + "  " + sdSolveTicks + "    " + averageAverageSteps + 
-                        "   " + sdAverageSteps + "  " + averageSDSteps + "  " + averageAverageTicks + " " + sdAverageTicks + "  " + averageSDTicks + "  " + averageAverageMilliseconds + 
-                        "   " + sdAverageMilliseconds + " " + averageSDMilliseconds;
+                        "   " + sdAverageSteps + "  " + averageAverageTicks + " " + sdAverageTicks + "  " + averageAverageMilliseconds + 
+                        "   " + sdAverageMilliseconds;
                     Console.WriteLine(line);
                     write += line + Environment.NewLine;
                     solver.state.PrintState();
