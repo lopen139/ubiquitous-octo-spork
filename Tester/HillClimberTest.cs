@@ -133,25 +133,31 @@ namespace Tester
             string file = "..\\..\\..\\ConsoleApplication4\\puzzles\\p096_sudoku.txt";
             string[] read = System.IO.File.ReadAllLines(file);
             var input = Parser.Parser_p096(read);
-            int tabuSize = 5;
+            int tabuSize = 12;
+            int correct = 0;
+            int childless = 0;
             foreach (var x in input)
             {
-                HillSudoku problem = new HillSudoku(input[0], 9);
+                HillSudoku problem = new HillSudoku(x, 9);
                 TabuSearch solver = new TabuSearch(problem, tabuSize);
-                Console.WriteLine("Testing TabuSearch");
+                //Console.WriteLine("Testing TabuSearch");
                 solver.Search();
-                problem.PrintState();
-                Console.WriteLine("Ticks: " + solver.solveTicks);
-                Console.WriteLine("Steps: " + solver.steps);
+               // problem.PrintState();
+               // Console.WriteLine("Ticks: " + solver.solveTicks);
+               // Console.WriteLine("Steps: " + solver.steps);
+                if (solver.steps < 2000) childless++;
                 if(problem.CheckSudoku())
                 {
-                    Console.WriteLine("CORRECTLY SOLVED");
+                   // Console.WriteLine("CORRECTLY SOLVED");
+                    correct++;
                 }
                 else
                 {
-                    Console.WriteLine("Incorrect");
+                   // Console.WriteLine("Incorrect");
                 }
             }
+            Console.WriteLine("answers found: " + correct);
+            Console.WriteLine(childless);
         }
 
         [TestMethod]

@@ -206,12 +206,12 @@ namespace ConsoleApplication4
                     //Test horizontal
                     for (int i = 0; i < n - 1; i++)
                     {
-                        if (val == hillpuzzle[i, y]) return false;
+                        if (val == hillpuzzle[i, y]  && i != x) return false;
                     }
                     //Test vertical
                     for (int i = 0; i < n - 1; i++)
                     {
-                        if (val == hillpuzzle[x, i]) return false;
+                        if (val == hillpuzzle[x, i] && i != y) return false;
                     }
                     //Test block
                     int x_block = x - x % sqrtN;
@@ -220,7 +220,7 @@ namespace ConsoleApplication4
                     {
                         for (int j = y_block; j < y_block + sqrtN; j++)
                         {
-                            if (val == hillpuzzle[i, j]) return false;
+                            if (val == hillpuzzle[i, j] && i!=x &&j!=y) return false;
                         }
                     }
 
