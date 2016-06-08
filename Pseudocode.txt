@@ -1,0 +1,44 @@
+Search:
+
+if(solved)
+	finish
+else
+	Tabulist.Add(currentstate)
+	if(!FindConflict())
+		successors.Sort()
+		nextChild = successors[0]
+		state.Augment(nextChild)
+
+
+FindConflict:
+
+Foreach( x and y in puzzle)
+	if(checkconflicts(x,y)
+		if SwapCell(x,y) return true
+return false
+
+CheckConflicts
+foreach i and j in puzzle
+	if value(x,y) == value (i,j) return true
+return false
+
+SwapCell
+Foreach(i and j in puzzlesquare(x,y))
+	if Checkconflicts(i,j) and FitnessImproved(x,y,i,j)
+		return true
+return false
+
+FitnessImproved
+Sudoku.swap(x,y,i,j)
+if (tabulist contains state)
+	tabus = true
+else
+	tabus = false
+if (newcombinedfitenss > oldcombinedfitness and !tabus)
+	state.updatefitness(x,y,i,j)
+	return true
+else
+	if (!tabus)
+		validSuccessors.add(x,y,i,j)
+	Sudoku.swap(x,y,i,j)
+return false

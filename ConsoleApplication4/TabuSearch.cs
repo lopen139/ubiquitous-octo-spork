@@ -184,7 +184,6 @@ namespace ConsoleApplication4
                 {
                     successors.Add(swap);
                 }
-                else { int huh = 0; }
 
                     state.AugmentSudoku(swap);
                 return false;
