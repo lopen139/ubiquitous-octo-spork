@@ -27,7 +27,8 @@ namespace ConsoleApplication4
             //Console.WriteLine("<>-------- Solving su17ExtremeDiff500 with method 4 --------<>");
             //RunTest("su17ExtremeDiff500", 4);
 
-            Analyzer();
+            //Analyzer_randomRestart();
+            Analyzer_ILS();
 
             Console.ReadLine();
         }
@@ -103,58 +104,61 @@ namespace ConsoleApplication4
         }
 
         /// <summary>
-        /// Makes analysis file
+        /// Makes analysis file for Iterated local search
         /// </summary>
-        public static void Analyzer()
+        public static void Analyzer_ILS()
         {
-            string fileName = "p096_sudoku";
-            var input = System.IO.File.ReadAllLines("..\\..\\puzzles\\" + fileName + ".txt");
-            List<int[,]> parsed = Parser.Parser_p096(input);
-            int i = 0;
-            int n = 9;
-            string str =
-                "i averageRestarts sdRestarts averageSolveTicks sdSolveTicks averageAverageSteps sdAverageSteps averageAverageTicks sdAverageTicks averageAverageMilliseconds sdAverageMilliseconds";
-            Console.WriteLine(str);
-            int solves = 100;
-            Console.WriteLine("solves: " + solves);
-            string write = str + Environment.NewLine;
-            write += solves + Environment.NewLine;
-            foreach (var test1 in parsed)
+            string[] fileNames = { "p096_sudoku", "su17ExtremeDiff500" };
+            foreach (var fileName in fileNames)
             {
+                var input = System.IO.File.ReadAllLines("..\\..\\puzzles\\" + fileName + ".txt");
+                List<int[,]> parsed = Parser.Parser_p096(input);
+                int i = 0;
+                int n = 9;
+                string str =
+                    "k averageRestarts sdRestarts averageSolveTicks sdSolveTicks ";
+                Console.WriteLine(str);
+                int solves = 100;
+                Console.WriteLine("solves: " + solves);
+                string write = str + Environment.NewLine;
+                write += solves + Environment.NewLine;
+                List<long> restarts = new List<long>();
+                List<long> solveTicks = new List<long>();
+                List<long> solveTMilliseconds = new List<long>();
+                List<double> averageSteps = new List<double>();
+                List<double> averageTicks = new List<double>();
+                List<double> averageMilliseconds = new List<double>();
+                for (int k = 10 ; k < 500; k = k + 10)
                 {
-                    HillSudoku sudoku = new HillSudoku(test1, n);
-                    HillClimber solver = new HillClimber(sudoku);
+                    foreach (var test1 in parsed)
+                        {
+                            HillSudoku sudoku = new HillSudoku(test1, n);
+                            HillClimber solver = new HillClimber(sudoku);
 
-                    //Analysis parameters
-                    List<long> restarts = new List<long>();
-                    List<long> solveTicks = new List<long>();
-                    List<long> solveTMilliseconds = new List<long>();
-                    List<double> averageSteps = new List<double>();
-                    List<double> averageTicks= new List<double>();
-                    List<double> averageMilliseconds = new List<double>();
-                    //List<double> sdSteps = new List<double>();
-                    //List<double> sdTicks = new List<double>();
-                    //<double> sdMilliseconds = new List<double>();
+                            //Analysis parameters
 
-                    //Multiple solves for each sudoku for more statistics
-                    for (int j = 0; j < solves; j++)
-                    {
-                        solver.RandomRestartHillClimb(new Random());
+                            //List<double> sdSteps = new List<double>();
+                            //List<double> sdTicks = new List<double>();
+                            //<double> sdMilliseconds = new List<double>();
 
-                        //Document analysis parameters
-                        restarts.Add(solver.restarts);
-                        solveTicks.Add(solver.solveTicks);
-                        solveTMilliseconds.Add(solver.solveTime);
-                        averageSteps.Add(solver.averageSteps);
-                        //sdSteps.Add(solver.sdSteps);
-                        averageTicks.Add(solver.averageTicks);
-                        averageMilliseconds.Add(solver.averageMilliseconds);
-                        //sdTicks.Add(solver.sdTicks);
-                        //sdMilliseconds.Add(solver.sdMilliseconds);
+                            //Multiple solves for each sudoku for more statistics
+                            //for (int j = 0; j < solves; j++)
+                                solver.RandomRestartHillClimb(new Random());
 
-                        //Reset analysis parameters in the solver
-                        solver.ResetAnalysisParameters();
-                    }
+                                //Document analysis parameters
+                                restarts.Add(solver.restarts);
+                                solveTicks.Add(solver.solveTicks);
+                                solveTMilliseconds.Add(solver.solveTime);
+                                averageSteps.Add(solver.averageSteps);
+                                //sdSteps.Add(solver.sdSteps);
+                                averageTicks.Add(solver.averageTicks);
+                                averageMilliseconds.Add(solver.averageMilliseconds);
+                                //sdTicks.Add(solver.sdTicks);
+                                //sdMilliseconds.Add(solver.sdMilliseconds);
+
+                                //Reset analysis parameters in the solver
+                                solver.ResetAnalysisParameters();
+                            }
                     //Process statistics per Sudoku
                     //restarts:
                     double averageRestarts = restarts.Average();
@@ -163,42 +167,122 @@ namespace ConsoleApplication4
                     double averageSolveTicks = solveTicks.Average();
                     double sdSolveTicks = StandardDeviation(solveTicks);
                     //average steps:
-                    double averageAverageSteps = averageSteps.Average();
-                    double sdAverageSteps = StandardDeviation(averageSteps);
-                    //double averageSDSteps = sdSteps.Average();
-                    //average ticks:
-                    double averageAverageTicks = averageTicks.Average();
-                    double sdAverageTicks = StandardDeviation(averageTicks);
-                    //double averageSDTicks = sdTicks.Average();
-                    //average ms:
-                    double averageAverageMilliseconds = averageMilliseconds.Average();
-                    double sdAverageMilliseconds = StandardDeviation(averageMilliseconds);
-                    //double averageSDMilliseconds = sdMilliseconds.Average();
+                    //double averageAverageSteps = averageSteps.Average();
+                    //double sdAverageSteps = StandardDeviation(averageSteps);
+                    ////double averageSDSteps = sdSteps.Average();
+                    ////average ticks:
+                    //double averageAverageTicks = averageTicks.Average();
+                    //double sdAverageTicks = StandardDeviation(averageTicks);
+                    ////double averageSDTicks = sdTicks.Average();
+                    ////average ms:
+                    //double averageAverageMilliseconds = averageMilliseconds.Average();
+                    //double sdAverageMilliseconds = StandardDeviation(averageMilliseconds);
+                    ////double averageSDMilliseconds = sdMilliseconds.Average();
 
                     //Write Line to file
-                    string line = i + " " + averageRestarts + "    " + sdRestarts + "    " + averageSolveTicks + "  " + sdSolveTicks + "    " + averageAverageSteps + 
-                        "   " + sdAverageSteps + "  " + averageAverageTicks + " " + sdAverageTicks + "  " + averageAverageMilliseconds + 
-                        "   " + sdAverageMilliseconds;
+                    //string line = k + " " + averageRestarts + "    " + sdRestarts + "    " + averageSolveTicks +
+                    //              "  " + sdSolveTicks + "    " + averageAverageSteps +
+                    //              "   " + sdAverageSteps + "  " + averageAverageTicks + " " + sdAverageTicks +
+                    //              "  " + averageAverageMilliseconds +
+                    //              "   " + sdAverageMilliseconds;
+                    string line = k + " " + averageRestarts + " " + sdRestarts + " " + averageSolveTicks +
+                                  " " + sdSolveTicks;
                     Console.WriteLine(line);
                     write += line + Environment.NewLine;
-                    solver.state.PrintState();
                 }
-                /*
-                if (mode == 4)
-                {
-                    HillSudoku sudoku = new HillSudoku(test1, n);
-                    HillClimber solver = new HillClimber(sudoku);
-                    solver.IteratedLocalSearch(new Random(), 20);
-                    write += i + " " + solver.restarts + "    " + solver.solveTime + "    " + solver.solveTicks +
-                             Environment.NewLine;
-                    solver.state.PrintState();
-                }
-                */
-                i++;
+                string loc = "..\\..\\puzzles\\analysis_ils_" + fileName + ".txt";
+                System.IO.File.WriteAllText(loc, write);
+                Console.WriteLine(@"Output saved to file: " + loc);
             }
-            string loc = "..\\..\\puzzles\\out" + "_analysis_simplesudoku" + "_" + fileName + ".txt";
-            System.IO.File.WriteAllText(loc, write);
-            Console.WriteLine(@"Output saved to file: " + loc);
+        }
+
+        /// <summary>
+        /// Makes analysis file for Random Restart
+        /// </summary>
+        public static void Analyzer_randomRestart()
+        {
+            string[] fileNames = { "p096_sudoku" , "su17ExtremeDiff500" };
+            foreach (var fileName in fileNames)
+            {
+                var input = System.IO.File.ReadAllLines("..\\..\\puzzles\\" + fileName + ".txt");
+                List<int[,]> parsed = Parser.Parser_p096(input);
+                int i = 0;
+                int n = 9;
+                string str =
+                    "i averageRestarts sdRestarts averageSolveTicks sdSolveTicks averageAverageSteps sdAverageSteps averageAverageTicks sdAverageTicks averageAverageMilliseconds sdAverageMilliseconds";
+                Console.WriteLine(str);
+                int solves = 100;
+                Console.WriteLine("solves: " + solves);
+                string write = str + Environment.NewLine;
+                write += solves + Environment.NewLine;
+                foreach (var test1 in parsed)
+                {
+                        HillSudoku sudoku = new HillSudoku(test1, n);
+                        HillClimber solver = new HillClimber(sudoku);
+
+                        //Analysis parameters
+                        List<long> restarts = new List<long>();
+                        List<long> solveTicks = new List<long>();
+                        List<long> solveTMilliseconds = new List<long>();
+                        List<double> averageSteps = new List<double>();
+                        List<double> averageTicks = new List<double>();
+                        List<double> averageMilliseconds = new List<double>();
+                        //List<double> sdSteps = new List<double>();
+                        //List<double> sdTicks = new List<double>();
+                        //<double> sdMilliseconds = new List<double>();
+
+                        //Multiple solves for each sudoku for more statistics
+                        for (int j = 0; j < solves; j++)
+                        {
+                            solver.RandomRestartHillClimb(new Random());
+
+                            //Document analysis parameters
+                            restarts.Add(solver.restarts);
+                            solveTicks.Add(solver.solveTicks);
+                            solveTMilliseconds.Add(solver.solveTime);
+                            averageSteps.Add(solver.averageSteps);
+                            //sdSteps.Add(solver.sdSteps);
+                            averageTicks.Add(solver.averageTicks);
+                            averageMilliseconds.Add(solver.averageMilliseconds);
+                            //sdTicks.Add(solver.sdTicks);
+                            //sdMilliseconds.Add(solver.sdMilliseconds);
+
+                            //Reset analysis parameters in the solver
+                            solver.ResetAnalysisParameters();
+                        }
+                        //Process statistics per Sudoku
+                        //restarts:
+                        double averageRestarts = restarts.Average();
+                        double sdRestarts = StandardDeviation(restarts);
+                        //solve ticks:
+                        double averageSolveTicks = solveTicks.Average();
+                        double sdSolveTicks = StandardDeviation(solveTicks);
+                        //average steps:
+                        double averageAverageSteps = averageSteps.Average();
+                        double sdAverageSteps = StandardDeviation(averageSteps);
+                        //double averageSDSteps = sdSteps.Average();
+                        //average ticks:
+                        double averageAverageTicks = averageTicks.Average();
+                        double sdAverageTicks = StandardDeviation(averageTicks);
+                        //double averageSDTicks = sdTicks.Average();
+                        //average ms:
+                        double averageAverageMilliseconds = averageMilliseconds.Average();
+                        double sdAverageMilliseconds = StandardDeviation(averageMilliseconds);
+                        //double averageSDMilliseconds = sdMilliseconds.Average();
+
+                        //Write Line to file
+                        string line = i + " " + averageRestarts + "    " + sdRestarts + "    " + averageSolveTicks + "  " + sdSolveTicks + "    " + averageAverageSteps +
+                            "   " + sdAverageSteps + "  " + averageAverageTicks + " " + sdAverageTicks + "  " + averageAverageMilliseconds +
+                            "   " + sdAverageMilliseconds;
+                        Console.WriteLine(line);
+                        write += line + Environment.NewLine;
+                    solver.state.PrintState();
+                    i++;
+                }
+                string loc = "..\\..\\puzzles\\analysis_randomRestart_" + fileName + ".txt";
+                System.IO.File.WriteAllText(loc, write);
+                Console.WriteLine(@"Output saved to file: " + loc); 
+            }
         }
     }
     
