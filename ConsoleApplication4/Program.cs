@@ -128,7 +128,7 @@ namespace ConsoleApplication4
                 List<double> averageSteps = new List<double>();
                 List<double> averageTicks = new List<double>();
                 List<double> averageMilliseconds = new List<double>();
-                for (int k = 10 ; k < 500; k = k + 10)
+                for (int k = 5 ; k < 100; k = k + 1)
                 {
                     foreach (var test1 in parsed)
                         {
