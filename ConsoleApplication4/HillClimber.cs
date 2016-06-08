@@ -1,18 +1,19 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Xml;
 
 namespace ConsoleApplication4
 {
-    /// <summary>
-    /// Finds local minimum for a given faulty-sudoku instance 
-    /// </summary>
     public class HillClimber
     {
         public HillSudoku state;
-        public bool[,] conflictArray;
+        public List<long> stepsList;
+        public List<long> ticksList;
+        public List<long> msList;
         public long steps;
-        public int restarts;
+        public long restarts;
         public Random random;
         public long solveTime;
         public long solveTicks;
@@ -22,6 +23,31 @@ namespace ConsoleApplication4
             state = _state;
             steps = 0;
             restarts = 0;
+            stepsList = new List<long>();
+            ticksList = new List<long>();
+            msList = new List<long>();
+        }
+        
+        //Analysis
+        public double averageSteps => stepsList.Average();
+        public double sdSteps => Program.StandardDeviation(stepsList);
+        public double averageTicks => ticksList.Average();
+        public double sdTicks => Program.StandardDeviation(ticksList);
+        public double averageMilliseconds => msList.Average();
+        public double sdMilliseconds => Program.StandardDeviation(msList);
+
+        /// <summary>
+        /// Resets all the Analysis parameters
+        /// </summary>
+        public void ResetAnalysisParameters()
+        {
+            steps = 0;
+            solveTicks = 0;
+            solveTime = 0;
+            restarts = 0;
+            stepsList = new List<long>();
+            ticksList = new List<long>();
+            msList = new List<long>();
         }
 
         /// <summary>
@@ -51,12 +77,12 @@ namespace ConsoleApplication4
                 state.hillpuzzle = bestSudoku;
                 RandomWalk(k, print);
                 HillClimb();
-                if (print)
-                {
-                    Console.WriteLine("Hill Climb:");
-                    state.PrintState();
-                    Console.WriteLine("-----------");
-                }
+                //if (print)
+                //{
+                //    Console.WriteLine("Hill Climb:");
+                //    state.PrintState();
+                //    Console.WriteLine("-----------");
+                //}
 
                 int fit = state.TotalFitness();
 
@@ -108,17 +134,19 @@ namespace ConsoleApplication4
 
                 state.AugmentSudoku(swap);
             }
-            if (print)
-            {
-                Console.WriteLine("Random walk:");
-                state.PrintState();
-                Console.WriteLine("------------");
-            }
+            //if (print)
+            //{
+            //    Console.WriteLine("Random walk:");
+            //    state.PrintState();
+            //    Console.WriteLine("------------");
+            //}
         }
 
         public void RandomRestartHillClimb(Random _random, bool print = false, int maxRestarts = int.MaxValue)
         {
             if(print) Console.WriteLine("Begin Random-restart Hill-climbing");
+            Stopwatch watch = new Stopwatch();
+            watch.Start();
             int best = 0;
             random = _random;
             bool solutionFound = false;
@@ -127,6 +155,7 @@ namespace ConsoleApplication4
                 restarts++;
                 state.ResetInstant(random);
                 HillClimb();
+
                 int fit = state.TotalFitness();
                 if (print)
                 {
@@ -139,6 +168,8 @@ namespace ConsoleApplication4
                 if (fit == 2*state.n*state.n) solutionFound = true;
                 if (restarts == maxRestarts) break;
             }
+            solveTicks = watch.ElapsedTicks;
+            solveTime = watch.ElapsedMilliseconds;
             if (print && !solutionFound) Console.WriteLine("No solution found in {0} restarts.", maxRestarts);
             if (print && solutionFound)
             {
@@ -149,31 +180,23 @@ namespace ConsoleApplication4
         }
 
         /// <summary>
-        /// Calculate, for each cell, if there is a conflict (from scratch).
-        /// </summary>
-        public void FillConflictArray()
-        {
-            for(int x = 0; x < state.n; x++)
-            {
-                for (int y = 0; y < state.n; y++)
-                {
-                    Cell cell = new Cell(x,y);
-                    conflictArray[x, y] = state.CheckConflicts(cell);
-                }
-            }
-        }
-
-        /// <summary>
         /// Finds local maximum. Algorithm is deterministic.
         /// </summary>
         public void HillClimb()
         {
+            Stopwatch watch = new Stopwatch();
+            watch.Start();
             bool swapped = true;
             while (swapped)
             {
                 swapped = FindConflict();
                 steps++;
             }
+            watch.Stop();
+            ticksList.Add(watch.ElapsedTicks);
+            msList.Add(watch.ElapsedMilliseconds);
+            stepsList.Add(steps);
+            steps = 0;
         }
 
         /// <summary>

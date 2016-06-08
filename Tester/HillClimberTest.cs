@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using ConsoleApplication4;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -66,7 +67,7 @@ namespace Tester
             var input = Parser.Parser_p096(read);
             HillSudoku testSudoku = new HillSudoku(input[0], 9);
 
-            Random rand = new Random();
+            Random rand = new Random(1);
 
             testSudoku.RandomizeSudoku(rand);
             HillClimber climber = new HillClimber(testSudoku);
@@ -85,7 +86,7 @@ namespace Tester
             var input = Parser.Parser_p096(read);
             HillSudoku testSudoku = new HillSudoku(input[0], 9);
 
-            Random rand = new Random();
+            Random rand = new Random(1);
 
             testSudoku.RandomizeSudoku(rand);
             HillClimber climber = new HillClimber(testSudoku);
