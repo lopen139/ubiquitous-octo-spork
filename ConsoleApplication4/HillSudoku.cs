@@ -14,7 +14,7 @@ namespace ConsoleApplication4
         public Cell(int _x, int _y) : this()
         {
             x = _x;
-            x = _y;
+            y = _y;
         }
     }
 
